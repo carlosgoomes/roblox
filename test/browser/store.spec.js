@@ -4,6 +4,30 @@ test.beforeEach(async({page})=>{
  await page.route('https://bloxrealm.com.br/**',route=>route.abort());
  await page.route('https://gnr-assets.centralcart.ai/**',route=>route.abort());
 });
+test('todos os produtos têm arte local e a imagem corresponde ao tipo do item',async({page})=>{
+ await page.goto('/');
+ await expect(page.locator('#store .product-visual')).toHaveCount(121);
+ const sheets=await page.locator('#store .product-visual image').evaluateAll(images=>[...new Set(images.map(i=>i.getAttribute('href')))]);
+ expect(sheets).toHaveLength(2);
+ for(const src of sheets){
+  const response=await page.request.get(src);expect(response.status()).toBe(200);expect(response.headers()['content-type']).toContain('image/png');
+  const decoded=await page.evaluate(async(src)=>{const i=new Image();i.src=src;await i.decode();return {width:i.naturalWidth,height:i.naturalHeight};},src);
+  expect(decoded.width).toBeGreaterThan(1000);expect(decoded.height).toBe(decoded.width);
+ }
+ const cases=[['Magma Permanente','magma'],['Portal Permanente','portal'],['Dark Blade','dark-blade'],['Raça Shark V4 + Level Máximo','shark-v4'],['Flow Slot — Blue Lock','flow-slot'],['Conta Roblox de 2010','veteran-account']];
+ for(const [name,key] of cases){
+  const card=page.locator('#store .product-card').filter({has:page.getByRole('heading',{name,exact:true})});
+  await expect(card.locator('.product-visual')).toHaveAttribute('data-artwork',key);
+ }
+ await page.goto('/category/gamepass-blox-fruits');
+ await page.getByLabel('Categoria',{exact:true}).selectOption({label:'Frutas permanentes'});
+ await page.screenshot({path:`test-results/product-images-${test.info().project.name}.png`});
+ await page.goto('/package/demo-permanent-portal');
+ await expect(page.locator('.detail-art .product-visual')).toHaveAttribute('data-artwork','portal');
+ await expect(page.locator('.detail-art .visual-variant')).toHaveText('PERMANENTE');
+ await page.getByRole('button',{name:'Adicionar ao carrinho',exact:true}).click();
+ await expect(page.getByRole('dialog').locator('.product-visual')).toHaveAttribute('data-artwork','portal');
+});
 test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await expect(page.getByRole('heading',{name:'Escolha uma categoria'})).toBeVisible();

@@ -10,7 +10,7 @@ O CSS original `/styles/c3fd1105fae74f1b.css` não estava acessível, portanto n
 
 ## Imagens
 
-`public/reference-assets.js` registra 14 URLs extraídas do HTML: oito imagens únicas de produtos, quatro de categorias, marca e banner. A interface tenta essas imagens originais; se falharem, usa os SVGs locais. Os demais produtos exibem ilustrações identificadas como tal.
+`public/reference-assets.js` registra 14 URLs extraídas do HTML: oito imagens únicas de produtos, quatro de categorias, marca e banner. A interface tenta essas imagens originais. Produtos agora têm artes locais específicas, em public/assets/products/: frutas diferentes, espadas, raças, gamepasses, avatares de contas e itens de Blue Lock/Jujutsu. Essas artes também são usadas se uma foto original falhar. Marca, categorias e banner mantêm as reservas SVG. As artes criadas são ilustrativas e não são capturas oficiais dos jogos.
 
 Para guardar as imagens no próprio projeto, depois de liberar `bloxrealm.com.br` e `gnr-assets.centralcart.ai` na rede do ambiente:
 

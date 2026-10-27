@@ -1,0 +1,19 @@
+/* Local, product-specific imagery. Both atlases are shared by all 121 cards. */
+.product-visual{display:block;position:relative;width:100%;height:100%;aspect-ratio:1.65;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 50%,#25204c,#08051b 75%);border-radius:inherit}
+.product-sprite{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;display:block}
+.product-original{position:absolute!important;inset:0!important;display:block;width:100%!important;height:100%!important;aspect-ratio:auto!important;object-fit:cover!important;z-index:2}
+.product-visual .visual-variant{position:absolute;top:8px;left:8px;z-index:3;max-width:75%;background:#150626db;border:1px solid #dc9aff7a;border-radius:5px;padding:4px 6px;font-size:8px;line-height:1.2;font-weight:850;letter-spacing:.5px;color:#f6dcff;box-shadow:0 2px 8px #0005}
+.secondary-artwork{position:absolute;right:7px;bottom:7px;width:32%;aspect-ratio:1;overflow:hidden;border:1px solid #c87aff88;border-radius:10px;background:#100821;z-index:1;box-shadow:0 3px 14px #0008}
+.product-art .product-visual{position:absolute;inset:0;border-radius:0}
+.product-art .illustrated-title{display:none}
+.illustration-badge{z-index:4;opacity:.8;pointer-events:none}
+.product-card:hover .product-sprite{filter:brightness(1.1)}
+.detail-art>.product-visual{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:1.05;font-size:inherit;letter-spacing:normal;text-transform:none;text-shadow:none;max-width:none;bottom:auto;left:auto}
+.detail-art>.product-visual .visual-variant{font-size:12px;top:17px;left:17px;padding:7px 10px}
+.detail-art>span:not(.product-visual){font-size:14px;left:16px;bottom:16px;max-width:80%;border-radius:7px;padding:8px 10px;background:#10071ccc;border:1px solid #ffffff1a;z-index:3}
+.cart-item>a{display:block;width:64px;height:64px;flex-shrink:0;border-radius:8px;overflow:hidden}
+.cart-item>a>.product-visual{width:100%;height:100%;aspect-ratio:1}
+.cart-item .visual-variant,.cart-item .secondary-artwork,.review .visual-variant,.review .secondary-artwork,.order-item .visual-variant,.order-item .secondary-artwork{display:none}
+.review>a>.product-visual{width:40px;height:35px;flex-shrink:0;border-radius:6px;aspect-ratio:auto}
+.order-item>.product-visual{width:60px;height:50px;flex:0 0 60px;border-radius:7px;aspect-ratio:auto}
+@media(max-width:767px){.product-visual .visual-variant{font-size:7px;top:6px;left:6px;padding:3px 4px}.secondary-artwork{right:5px;bottom:5px;border-radius:7px}.detail-art>.product-visual{aspect-ratio:1.25}.detail-art>.product-visual .visual-variant{font-size:10px;padding:6px 8px;top:12px;left:12px}.detail-art>span:not(.product-visual){font-size:12px;padding:6px 8px;bottom:12px;left:12px}.order-summary .cart-item>a{width:48px;height:48px}.order-item>.product-visual{width:48px;height:44px;flex-basis:48px}}
