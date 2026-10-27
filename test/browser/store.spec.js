@@ -34,7 +34,8 @@ test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  await expect(page.locator('#store .product-card')).toHaveCount(121);
  await expect(page.locator('.category-grid>a')).toHaveCount(4);
  expect(await page.locator('.reference-products').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(test.info().project.name==='desktop'?5:2);
- await expect(page.locator('.reference-hero img')).toHaveJSProperty('naturalWidth',1400);
+ await expect(page.locator('.reference-hero img')).toHaveJSProperty('complete',true);
+ expect(await page.locator('.reference-hero img').evaluate(img=>img.naturalWidth)).toBeGreaterThan(1000);
  await page.screenshot({path:`test-results/viewport-${test.info().project.name}.png`});
  await page.screenshot({path:`test-results/home-${test.info().project.name}.png`,fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();

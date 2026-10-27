@@ -68,3 +68,5 @@ O ambiente atual fornece Chromium em `/usr/bin/chromium`, detectado pela configu
 ## Retomar o ambiente
 
 Cada tarefa em nuvem já é isolada; utilize o checkout existente e não crie worktrees, a menos que solicitado. Depois da restauração do ambiente, dependências e banco podem persistir, mas processos precisam ser iniciados novamente. Execute `npm start`, verifique `/api/catalog` e teste o fluxo necessário. Não há credenciais ou serviços externos obrigatórios para o modo demonstração.
+
+A identidade atual usa o banner `public/assets/realbux-banner.png`, o logotipo `public/assets/realbux-brand.svg` e o ícone R `public/assets/realbux-icon.svg`. O título da página inicial é REALBUX; as páginas internas mantêm a marca no início do título da guia.
