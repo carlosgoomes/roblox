@@ -52,7 +52,7 @@ if(products.length!==121)throw new Error('O catálogo demonstrativo deve conter 
 export const faqs = [
   ['Como funciona a entrega?', 'Na referência, contas são entregues após a confirmação do pagamento, gamepasses em até 24 horas e Robux em 5 a 7 dias úteis. Nesta recriação, pedidos são de demonstração: não há cobrança nem entrega de itens.'],
   ['É confiável comprar na REALBUX?', 'O HTML de referência informa pagamento via Pix e suporte dedicado. Esta versão é uma recriação independente em demonstração e não processa pagamentos.'],
-  ['Precisa de ajuda?', 'Acesse o Discord indicado na referência pelo botão de suporte. Para dúvidas sobre esta versão, consulte a documentação do projeto.'],
+  ['Precisa de ajuda?', 'Consulte as perguntas frequentes para informações sobre o catálogo, a conta e os pedidos de demonstração. O histórico de compras está disponível em Minha conta.'],
   ['Preciso informar minha senha do Roblox?', 'Não. Esta versão nunca solicita senha da sua conta Roblox. O cadastro local é exclusivo desta aplicação.'],
   ['Onde acompanho meus pedidos?', 'Entre na sua conta e abra “Meus pedidos”. Cada pedido de demonstração fica salvo na sua conta, com os itens, o valor e o status.'],
   ['Posso alterar meu carrinho?', 'Sim. Use os botões + e − para alterar quantidades, ou a lixeira para remover um produto. O carrinho fica salvo neste navegador.'],

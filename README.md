@@ -39,7 +39,7 @@ Por isso:
 - Valores, estoques e os detalhes das páginas internas são de demonstração e estão identificados na interface.
 - Não existe integração com Roblox, CentralCart, Pix ou entrega real. O checkout não gera QR Code nem solicita dados financeiros. Pedidos têm status `demo`.
 - As 14 URLs de imagens presentes no HTML (oito produtos, quatro categorias, marca e banner) estão associadas à interface. A identidade visível é REALBUX. O site usa imagens locais de marca, banner, categorias e produtos para evitar o reaparecimento da marca antiga em imagens externas. Todos os 121 produtos têm uma arte correspondente, incluindo frutas, equipamentos, raças, passes e contas; as URLs originais permanecem documentadas somente como referência histórica. O acesso de rede do ambiente ainda bloqueia o download local. Os outros 113 produtos usam ilustrações locais e dados de demonstração; não há garantia de equivalência do catálogo completo ou dos pixels. Consulte REFERENCE.md.
-- Os links de Discord e Instagram vêm do HTML enviado; sua disponibilidade depende desses serviços externos.
+- Os botões flutuantes e os links de redes sociais foram removidos; a navegação de ajuda permanece na página de FAQ.
 - Os textos de termos e privacidade são próprios desta demonstração e precisam de revisão antes de uso comercial.
 
 Para transformar em loja comercial, ainda são necessários os dados reais dos produtos, as imagens autorizadas, um provedor de pagamento com webhooks verificados, estoque e entrega, recuperação de senha com serviço de e-mail e políticas comerciais revisadas. Não substitua o status `demo` por pagamento aprovado sem verificar o pagamento no servidor.
