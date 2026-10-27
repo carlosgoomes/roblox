@@ -27,3 +27,7 @@ O usuário informou **121 produtos** na loja original. O catálogo demonstrativo
 O documento fornecido tem os contêineres das categorias, mas os produtos são carregados por JavaScript. Seus nomes, preços, estoques e URLs individuais não estão presentes. Para igualar os 121 produtos reais, ainda é necessário acessar o catálogo completo ou receber uma exportação. Não confunda os exemplos com ofertas, estoque ou preços oficiais.
 
 O conteúdo fica em `public/catalog.js`; `source: 'reference-html'` identifica os oito itens encontrados e `demo`/`demo-generated` identifica os exemplos. Todos os preços, estoques e pedidos continuam de demonstração.
+
+## Identidade REALBUX
+
+A marca visível foi substituída por REALBUX em todas as páginas, no logotipo, no banner, nos títulos, no favicon e nos textos. A interface usa os recursos locais para não reintroduzir a identidade anterior por imagens externas. As URLs acima e em `public/reference-assets.js` ficam somente como registro da origem do material; não representam um domínio da REALBUX. Não foram criados perfis sociais ou domínios fictícios.

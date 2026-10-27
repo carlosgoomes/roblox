@@ -45,7 +45,7 @@ export async function handler(req,res) {
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Referrer-Policy','same-origin');
   res.setHeader('X-Frame-Options','DENY');
-  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data: https://bloxrealm.com.br https://gnr-assets.centralcart.ai; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
   const send=(data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try {
     const url=new URL(req.url,'http://localhost'); const path=url.pathname;
@@ -113,4 +113,4 @@ export async function handler(req,res) {
   } catch(e) {if(!e.status) console.error(e);send({error:e.status?e.message:'Não foi possível concluir. Tente novamente.'},e.status||500);}
 }
 export const server=http.createServer(handler);
-if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) server.listen(Number(process.env.PORT||3000),process.env.HOST||'0.0.0.0',()=>console.log(`Bloxrealm em execução na porta ${process.env.PORT||3000}`));
+if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) server.listen(Number(process.env.PORT||3000),process.env.HOST||'0.0.0.0',()=>console.log(`REALBUX em execução na porta ${process.env.PORT||3000}`));

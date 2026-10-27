@@ -1,4 +1,4 @@
-# Bloxrealm — recriação
+# REALBUX — recriação
 
 Aplicação independente criada do zero a partir do HTML enviado. Interface escura com destaque roxo, navegação responsiva, catálogo de produtos Roblox e backend local em Node.js/SQLite. Não depende do site original para funcionar e não inclui pixels de rastreamento.
 
@@ -38,7 +38,7 @@ Por isso:
 
 - Valores, estoques e os detalhes das páginas internas são de demonstração e estão identificados na interface.
 - Não existe integração com Roblox, CentralCart, Pix ou entrega real. O checkout não gera QR Code nem solicita dados financeiros. Pedidos têm status `demo`.
-- As 14 URLs de imagens presentes no HTML (oito produtos, quatro categorias, marca e banner) estão associadas à interface. As oito imagens originais de produtos são tentadas primeiro, com artes temáticas locais de reserva. Todos os 121 produtos têm uma arte correspondente, incluindo frutas, equipamentos, raças, passes e contas; marca e banner mantêm reservas SVG. O acesso de rede do ambiente ainda bloqueia o download local. Os outros 113 produtos usam ilustrações locais e dados de demonstração; não há garantia de equivalência do catálogo completo ou dos pixels. Consulte REFERENCE.md.
+- As 14 URLs de imagens presentes no HTML (oito produtos, quatro categorias, marca e banner) estão associadas à interface. A identidade visível é REALBUX. O site usa imagens locais de marca, banner, categorias e produtos para evitar o reaparecimento da marca antiga em imagens externas. Todos os 121 produtos têm uma arte correspondente, incluindo frutas, equipamentos, raças, passes e contas; as URLs originais permanecem documentadas somente como referência histórica. O acesso de rede do ambiente ainda bloqueia o download local. Os outros 113 produtos usam ilustrações locais e dados de demonstração; não há garantia de equivalência do catálogo completo ou dos pixels. Consulte REFERENCE.md.
 - Os links de Discord e Instagram vêm do HTML enviado; sua disponibilidade depende desses serviços externos.
 - Os textos de termos e privacidade são próprios desta demonstração e precisam de revisão antes de uso comercial.
 
