@@ -1,0 +1,3 @@
+import { existsSync } from 'node:fs';
+import { defineConfig } from '@playwright/test';
+export default defineConfig({testDir:'./test/browser',fullyParallel:false,workers:1,reporter:'list',use:{baseURL:'http://127.0.0.1:3100',headless:true,launchOptions:{executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined)},screenshot:'only-on-failure'},webServer:{command:'node src/server.js',url:'http://127.0.0.1:3100',reuseExistingServer:false,env:{PORT:'3100',HOST:'127.0.0.1',DB_PATH:'/tmp/realm-browser-test.sqlite'}},projects:[{name:'desktop',use:{viewport:{width:1440,height:1000}}},{name:'mobile',use:{viewport:{width:390,height:844},isMobile:true,hasTouch:true}}]});
