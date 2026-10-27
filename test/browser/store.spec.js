@@ -4,6 +4,27 @@ test.beforeEach(async({page})=>{
  await page.route('https://bloxrealm.com.br/**',route=>route.abort());
  await page.route('https://gnr-assets.centralcart.ai/**',route=>route.abort());
 });
+test('banner promocional à direita leva aos produtos com desconto no carrinho',async({page})=>{
+ const {products}=await (await page.request.get('/api/catalog')).json();
+ const offers=products.filter(p=>p.discountPercent===80);
+ expect(offers.length).toBeGreaterThan(0);
+ await page.goto('/');
+ const banner=page.locator('.promo-banner');await expect(banner).toBeVisible();
+ await expect(banner.locator('img')).toHaveJSProperty('complete',true);
+ expect(await banner.locator('img').evaluate(i=>i.naturalWidth)).toBeGreaterThan(1000);
+ const promoBox=await banner.boundingBox();const heroBox=await page.locator('.reference-hero').boundingBox();
+ if(test.info().project.name==='desktop'){expect(promoBox.x).toBeGreaterThanOrEqual(heroBox.x+heroBox.width);expect(promoBox.y+promoBox.height).toBeLessThan(1000);}
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await page.screenshot({path:`test-results/promotion-${test.info().project.name}.png`});
+ await page.getByRole('link',{name:'Ver produtos com 80% OFF',exact:true}).click();
+ await expect(page).toHaveURL(/\/catalog\?promo=80$/);
+ await expect(page.locator('#results .product-card')).toHaveCount(offers.length);
+ await expect(page.locator('#results .discount-pill')).toHaveCount(offers.length);
+ await page.locator('#results .product-art').first().click();
+ await expect(page.locator('.detail-price')).toHaveText(offers[0].price.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}));
+ await page.getByRole('button',{name:'Adicionar ao carrinho',exact:true}).click();
+ await expect(page.getByRole('dialog').locator('.total-row')).toContainText(offers[0].price.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}));
+});
 test('todos os produtos têm arte local e a imagem corresponde ao tipo do item',async({page})=>{
  await page.goto('/');
  await expect(page.locator('#store .product-visual')).toHaveCount(121);

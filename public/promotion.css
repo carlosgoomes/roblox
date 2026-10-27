@@ -1,0 +1,15 @@
+.home-hero-layout{display:grid;grid-template-columns:1.7fr 1fr;gap:22px;align-items:center;margin-bottom:42px}
+.home-hero-layout>.reference-hero{margin-bottom:0;min-width:0}
+.promo-banner{justify-self:end;width:100%;min-width:0;border:1px solid #e5ae4370;border-radius:16px;overflow:hidden;background:#250c37;box-shadow:0 8px 35px #b533e226,0 0 0 3px #cc56ed09;transition:box-shadow .2s,transform .2s}
+.promo-banner:hover{box-shadow:0 10px 45px #bd42f74a,0 0 0 2px #e8bb4b55;transform:translateY(-2px)}
+.promo-link{display:block;color:#fff}.promo-link:hover{color:#fff}
+.promo-banner img{display:block;width:100%;height:auto;aspect-ratio:3;object-fit:cover}
+.promo-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border-top:1px solid #f5bf4c45;background:linear-gradient(110deg,#391050,#1e0a2f)}
+.promo-action-copy{min-width:0}.promo-action-copy strong{display:block;color:#f3d88b;font-size:11px;line-height:1.5}.promo-action-copy small{display:block;font-size:9px;line-height:1.5;color:#d0afd9}
+.promo-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:7px;background:linear-gradient(#ffe69d,#efba4d);color:#2c1238;box-shadow:0 3px 14px #f8cb4826;padding:10px 11px;font-size:10px;font-weight:900;white-space:nowrap;line-height:1.2}
+.promo-cta>.icon{font-size:15px}.discount-pill{display:inline-flex;align-items:center;border:1px solid #f5c45e5e;border-radius:5px;background:#d9941921;color:#ffe1a0;font-size:9px;font-weight:850;padding:3px 6px;margin-top:6px;align-self:flex-start;white-space:nowrap}
+.detail-copy>.discount-pill{font-size:12px;padding:6px 9px;margin-bottom:10px}
+@media(max-width:1100px) and (min-width:901px){.home-hero-layout{grid-template-columns:1.5fr 1fr;gap:17px}.promo-action{padding:10px}.promo-cta{font-size:9px;padding:10px 8px}.promo-action-copy strong{font-size:10px}.promo-action-copy small{font-size:8px}}
+@media(max-width:900px){.home-hero-layout{grid-template-columns:1fr;gap:19px;margin-bottom:32px}.promo-banner{max-width:620px}.promo-action{padding:13px 17px}.promo-cta{font-size:12px;padding:11px 15px}.promo-action-copy strong{font-size:13px}.promo-action-copy small{font-size:10px}}
+@media(max-width:767px){.home-hero-layout{gap:16px;margin-bottom:28px}.promo-banner{max-width:100%;border-radius:12px}.promo-action{padding:11px;gap:7px}.promo-action-copy strong{font-size:10px}.promo-action-copy small{font-size:8px}.promo-cta{font-size:9px;padding:10px 9px;gap:4px}.promo-cta .icon{font-size:13px}.discount-pill{font-size:8px;padding:3px 5px}}
+@media(prefers-reduced-motion:reduce){.promo-banner{transition:none}.promo-banner:hover{transform:none}}

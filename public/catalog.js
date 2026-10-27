@@ -1,3 +1,4 @@
+import { applyPromotion } from './promotion.js';
 import { referenceImage } from './reference-assets.js';
 
 export const categories = [
@@ -46,7 +47,7 @@ fruits.forEach((fruit,i)=>demo(`permanent-${fruit.toLowerCase()}`,`${fruit} Perm
 [2010,2011,2012,2013,2014,2015,2016,2017].forEach((year,i)=>demo(`account-${year}`,`Conta Roblox de ${year}`,'contas-antigas-raras','Contas raras','rare',`Conta ${year}`,59.9-i*5));
 [['Gamepasses','Early Access'],['Gamepasses','VIP'],['Gamepasses','Emote Slots'],['Caixas raras','5X Chromatic Box'],['Caixas raras','10X Chromatic Box'],['Caixas raras','Pacote de Caixas Especiais']].forEach(([group,name],i)=>demo(`jujutsu-${i}`,`${name} — Jujutsu Shenanigans`,'jujutsu-shenanigans',group,'jujutsu',name,9.9+i*8));
 [['Mês das Crianças','Conta Especial — Pacote A','rare'],['Mês das Crianças','Conta Especial — Pacote B','rare'],['Promoção relâmpago','Conta Level Máximo + Magma','fruits'],['Caixas raras','Caixa de Contas Épicas','rare'],['Especiais','Conta Colecionador — Pacote Especial','sword']].forEach(([group,name,art],i)=>demo(`special-${i}`,name,'bloxfruits',group,art,name,8.9+i*9));
-export const products=[...baseProducts,...generated];
+export const products=[...baseProducts,...generated].map(applyPromotion);
 if(products.length!==121)throw new Error('O catálogo demonstrativo deve conter 121 produtos.');
 
 export const faqs = [

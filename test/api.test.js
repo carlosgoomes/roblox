@@ -25,13 +25,13 @@ test('conta, sessão, validação de preço, pedidos e isolamento de usuários',
  assert.equal(registration.status,200);assert.ok(registration.cookie);cookie=registration.cookie;
  assert.equal((await request('me')).value.user.name,'Jogador Teste');
  assert.equal((await request('register',{name:'Outro',email:'player@example.test',password:'safe-test-password'})).status,409);
- const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);assert.equal(products.length,121);
+ const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);const sale=products.find(p=>p.discountPercent===80);assert.equal(products.length,121);assert.ok(sale);assert.equal(Math.round(sale.price*100),Math.round(sale.oldPrice*100*.2));
  assert.equal((await request('orders',{items:[{id:p.id,quantity:1}],username:'Player',accepted:false})).status,400);
  for(const quantity of [-1,0,0.5,999,'1']) assert.equal((await request('orders',{items:[{id:p.id,quantity}],username:'Player',accepted:true})).status,400);
  assert.equal((await request('orders',{items:[null],username:'Player',accepted:true})).status,400);
  assert.equal((await request('orders',{items:[{id:p.id,quantity:1},{id:p.id,quantity:1}],username:'Player',accepted:true})).status,400);
- const created=await request('orders',{items:[{id:p.id,quantity:2,price:0.01},{id:last.id,quantity:1,price:0.01}],username:'Player_123',accepted:true,total:0.02});
- assert.equal(created.status,201);assert.equal(created.value.order.total,Math.round((p.price*2+last.price)*100)/100);assert.equal(created.value.order.status,'demo');
+ const created=await request('orders',{items:[{id:p.id,quantity:2,price:0.01},{id:last.id,quantity:1,price:0.01},{id:sale.id,quantity:1,price:0.01}],username:'Player_123',accepted:true,total:0.02});
+ assert.equal(created.status,201);assert.equal(created.value.order.total,Math.round((p.price*2+last.price+sale.price)*100)/100);assert.equal(created.value.order.status,'demo');
  assert.equal((await request('orders')).value.orders[0].id,created.value.order.id);
  assert.equal((await request('profile',{name:'Novo Nome'},true,'https://evil.example')).status,403);
  assert.equal((await request('profile',{name:'Novo Nome'})).status,200);
