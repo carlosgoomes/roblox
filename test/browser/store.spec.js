@@ -7,8 +7,9 @@ test.beforeEach(async({page})=>{
 test('banner promocional à direita leva aos produtos com desconto no carrinho',async({page})=>{
  const {products}=await (await page.request.get('/api/catalog')).json();
  const offers=products.filter(p=>p.discountPercent===80);
- expect(offers.length).toBeGreaterThan(0);
+ expect(offers).toHaveLength(121);
  await page.goto('/');
+ await expect(page.locator('.promo-action-copy strong')).toHaveText('80% OFF em todo o catálogo');
  const banner=page.locator('.promo-banner');await expect(banner).toBeVisible();
  await expect(banner.locator('img')).toHaveJSProperty('complete',true);
  expect(await banner.locator('img').evaluate(i=>i.naturalWidth)).toBeGreaterThan(1000);

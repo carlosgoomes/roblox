@@ -1,7 +1,7 @@
 // Demo promotion: the discount is calculated from the price already listed in the catalog.
 export const promotion = {
   percent: 80,
-  scope: 'flash',
+  scope: 'all',
   productGroup: 'Promoção relâmpago',
   href: '/catalog?promo=80'
 };
