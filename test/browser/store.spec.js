@@ -1,7 +1,17 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async({page})=>{
+ // Exercise deterministic local image fallbacks; external originals remain network-dependent.
+ await page.route('https://bloxrealm.com.br/**',route=>route.abort());
+ await page.route('https://gnr-assets.centralcart.ai/**',route=>route.abort());
+});
 test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await expect(page.getByRole('heading',{name:'Escolha uma categoria'})).toBeVisible();
+ await expect(page.locator('#store .product-card')).toHaveCount(121);
+ await expect(page.locator('.category-grid>a')).toHaveCount(4);
+ expect(await page.locator('.reference-products').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(test.info().project.name==='desktop'?5:2);
+ await expect(page.locator('.reference-hero img')).toHaveJSProperty('naturalWidth',1400);
+ await page.screenshot({path:`test-results/viewport-${test.info().project.name}.png`});
  await page.screenshot({path:`test-results/home-${test.info().project.name}.png`,fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.getByRole('button',{name:'Abrir menu'}).click();await expect(page.getByRole('dialog')).toBeVisible();

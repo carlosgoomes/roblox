@@ -45,7 +45,7 @@ export async function handler(req,res) {
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Referrer-Policy','same-origin');
   res.setHeader('X-Frame-Options','DENY');
-  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data: https://bloxrealm.com.br https://gnr-assets.centralcart.ai; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
   const send=(data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try {
     const url=new URL(req.url,'http://localhost'); const path=url.pathname;
@@ -91,7 +91,7 @@ export async function handler(req,res) {
         const data=await body(req);
         if(data.accepted!==true) fail('Aceite os termos para continuar.');
         if(typeof data.username!=='string' || !/^[A-Za-z0-9_]{3,20}$/.test(data.username)) fail('Informe um usuário Roblox de 3 a 20 caracteres (letras, números ou _).');
-        if(!Array.isArray(data.items) || !data.items.length || data.items.length>50) fail('Seu carrinho está vazio ou inválido.');
+        if(!Array.isArray(data.items) || !data.items.length || data.items.length>products.length) fail('Seu carrinho está vazio ou inválido.');
         const seen=new Set();
         const items=data.items.map(item=>{
           if(!item || typeof item!=='object') fail('Produto inválido.');

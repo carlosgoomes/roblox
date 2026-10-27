@@ -43,7 +43,7 @@ As tabelas são criadas automaticamente na primeira operação autenticada. O ba
 ## Verificação depois do deploy
 
 - Abra a URL fornecida pela Vercel e acesse diretamente `/faq` e uma página `/package/...`; a atualização do navegador deve manter essas páginas funcionais.
-- Confira `/api/catalog` (20 produtos) e `/api/me` (`user: null` sem sessão).
+- Confira `/api/catalog` (121 produtos) e `/api/me` (`user: null` sem sessão).
 - Crie uma conta de teste, registre um pedido de demonstração e confira o histórico após sair e entrar novamente.
 - Confirme que o cookie `realm_session` inclui HttpOnly, SameSite=Lax e Secure.
 - Verifique novamente o pedido após uma nova implantação para confirmar a persistência remota.

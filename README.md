@@ -22,7 +22,7 @@ Variáveis opcionais: `PORT` (3000), `HOST` (`0.0.0.0`), `DB_PATH` (caminho do S
 
 - Início com banner, categorias, destaques, comunidade, avaliações de referência, benefícios, FAQ e sobre nós.
 - Catálogo, cinco categorias, busca sem distinção de acentos, filtro por subcategoria e ordenação por popularidade, nome e preço.
-- Vinte produtos com páginas individuais, abas de descrição/entrega/avaliações, quantidade, estado de esgotado e itens relacionados.
+- 121 produtos demonstrativos com páginas individuais, abas de descrição/entrega/avaliações, quantidade, estado de esgotado e itens relacionados.
 - Carrinho lateral com adição, alteração de quantidade, remoção, total e persistência no navegador.
 - Cadastro, login, logout, sessão por cookie HttpOnly, edição de nome e troca de senha. Senhas protegidas com scrypt e salt individual.
 - Checkout de demonstração, cálculo de preços no servidor, validação de estoque e quantidades, registro de pedidos em SQLite e histórico exclusivo por usuário.
@@ -32,13 +32,13 @@ Rotas: `/`, `/catalog`, `/search?q=...`, `/category/:id`, `/package/:id`, `/faq`
 
 ## Origem e limites
 
-O material fornecido contém **apenas o HTML da página inicial**. Nomes de categorias/produtos, textos institucionais e alguns depoimentos foram extraídos dele. O HTML não inclui os preços, o estoque, os documentos legais completos, as páginas internas ou o backend original.
+O material fornecido contém **apenas o HTML da página inicial**. Categorias, oito produtos, textos institucionais e alguns depoimentos foram extraídos dele. Os demais itens são demonstrativos; o total de 121 foi informado pelo usuário. O HTML não inclui os preços, o estoque, os documentos legais completos, as páginas internas ou o backend original.
 
 Por isso:
 
 - Valores, estoques e os detalhes das páginas internas são de demonstração e estão identificados na interface.
 - Não existe integração com Roblox, CentralCart, Pix ou entrega real. O checkout não gera QR Code nem solicita dados financeiros. Pedidos têm status `demo`.
-- As imagens originais estavam inacessíveis pela política de rede do ambiente. As ilustrações e a marca visual em `public/assets/` são SVGs locais criados para esta versão; não são cópias exatas das imagens originais. Não há garantia de equivalência pixel a pixel.
+- As 14 URLs de imagens presentes no HTML (oito produtos, quatro categorias, marca e banner) estão associadas à interface. As imagens originais são tentadas primeiro, com SVGs locais de reserva. O acesso de rede do ambiente ainda bloqueia o download local. Os outros 113 produtos usam ilustrações locais e dados de demonstração; não há garantia de equivalência do catálogo completo ou dos pixels. Consulte REFERENCE.md.
 - Os links de Discord e Instagram vêm do HTML enviado; sua disponibilidade depende desses serviços externos.
 - Os textos de termos e privacidade são próprios desta demonstração e precisam de revisão antes de uso comercial.
 

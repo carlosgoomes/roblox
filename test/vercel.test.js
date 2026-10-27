@@ -14,7 +14,7 @@ after(() => new Promise(resolve => server.close(resolve)));
 test('entrada Vercel serve o catálogo e sessão anônima sem gravar banco efêmero', async () => {
   const catalog = await fetch(base + 'catalog');
   assert.equal(catalog.status, 200);
-  assert.equal((await catalog.json()).products.length, 20);
+  assert.equal((await catalog.json()).products.length, 121);
   const me = await fetch(base + 'me');
   assert.equal(me.status, 200);
   assert.deepEqual(await me.json(), { user: null });
