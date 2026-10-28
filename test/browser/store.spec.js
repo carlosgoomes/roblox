@@ -195,9 +195,11 @@ test('a primeira imagem aparece pelo HTML antes de carregar o JavaScript da loja
   await expect(page.locator('.promo-banner img')).toHaveJSProperty('complete',true);
   await expect(page.locator('#store')).toHaveCount(0);
   const hero=await page.locator('.home-hero-layout').elementHandle();
+  const initialHome=await page.locator('.home-reference').elementHandle();
   release();
   await expect(page.locator('#store .product-card')).toHaveCount(121);
   expect(await hero.evaluate(node=>node.isConnected)).toBeTruthy();
+  expect(await initialHome.evaluate(node=>node.isConnected)).toBeTruthy();
   await expect(page.locator('.home-hero-layout')).toHaveCount(1);
  }finally{release();}
 });

@@ -139,7 +139,20 @@ function legalPage(privacy=false) {return `<article class="container page legal"
  ['6. Plataformas e direitos','Roblox e os jogos citados pertencem aos seus respectivos titulares. A REALBUX não declara vínculo ou parceria com essas plataformas.']
  ]).map(([h,p])=>`<section><h2>${h}</h2><p>${p}</p></section>`).join('')}<a class="btn outline" href="/">Voltar ao início</a></article>`;}
 function notFound() {return '<div class="container page empty-state"><span class="eyebrow">404 · FORA DO MAPA</span><h1>Essa página ainda não faz parte do seu universo.</h1><p>Volte para a loja e encontre seu próximo upgrade.</p><a href="/" class="btn">Voltar ao início</a></div>';}
-function render() {let path=location.pathname;const initialShell=path==='/'&&$('#app').hasAttribute('data-initial-shell');const initialHero=initialShell?$('.home-hero-layout'):null;const initialCategories=initialShell?$('.categories-section'):null;if(path.startsWith('/package/demo-')){path='/package/'+normalizeProductId(path.slice(9));history.replaceState({},'',path+location.search+location.hash);}let content,title; if(path==='/'){content=home();title='Início';}else if(path==='/catalog'||path==='/search'||path.startsWith('/category/')){const q=new URLSearchParams(location.search).get('q')||'';filters.query=q;content=catalogPage(path.startsWith('/category/')?decodeURIComponent(path.split('/')[2]):null,path==='/search'?q:'');title='Catálogo';}else if(path.startsWith('/package/')){content=productPage(decodeURIComponent(path.slice(9)));title=products.find(p=>p.id===decodeURIComponent(path.slice(9)))?.name||'Produto';}else if(['/login','/register'].includes(path)){content=authPage(path==='/register');title=path==='/login'?'Entrar':'Criar conta';}else if(path==='/checkout'){content=checkout();title='Checkout';}else if(path==='/account'||path.startsWith('/account/orders')){content=accountPage();title='Minha conta';}else if(path==='/faq'){content=`<div class="container page">${breadcrumbs('Perguntas frequentes')}${heading('COMO PODEMOS AJUDAR?','Perguntas frequentes','Tudo o que você precisa saber antes de começar sua jornada.').replace('<h2>','<h1>').replace('</h2>','</h1>')}${faqList(true)}<div class="support-box"><h2>Acompanhe seus pedidos</h2><p>Consulte os detalhes das suas compras na área da sua conta.</p><a class="btn" href="/account/orders">Ver meus pedidos ${icon('arrow')}</a></div></div>`;title='Perguntas frequentes';}else if(['/terms','/privacidade'].includes(path)){content=legalPage(path==='/privacidade');title=path==='/terms'?'Termos de uso':'Privacidade';}else{content=notFound();title='Página não encontrada';}$('#app').innerHTML=header()+`<main id="main" tabindex="-1">${content}</main>`+footer();if(initialHero&&$('.home-hero-layout'))$('.home-hero-layout').replaceWith(initialHero);if(initialCategories&&$('.categories-section'))$('.categories-section').replaceWith(initialCategories);$('#app').removeAttribute('data-initial-shell');document.title=path==='/'?'REALBUX':`REALBUX — ${title}`;updateResults();loadOrders();if(path==='/')hydrateHomeProducts();trackNavigation(path.startsWith('/package/')?products.find(p=>p.id===decodeURIComponent(path.slice(9))):null,cartItems());}
+function mountPage(markup,initialShell){
+ const root=$('#app');
+ if(initialShell){
+  const template=document.createElement('template');template.innerHTML=markup;
+  const main=root.querySelector('main'),home=main.querySelector('.home-reference');
+  const freshMain=template.content.querySelector('main'),freshHome=freshMain.querySelector('.home-reference');
+  for(const node of [...freshHome.children])if(!node.matches('.home-hero-layout,.categories-section'))home.append(node);
+  for(const node of [...freshMain.children])if(node!==freshHome)main.append(node);
+  if(!root.querySelector('.header'))root.prepend(template.content.querySelector('.header'));
+  root.append(template.content.querySelector('footer'));
+ }else root.innerHTML=markup;
+ root.removeAttribute('data-initial-shell');
+}
+function render() {let path=location.pathname;const initialShell=path==='/'&&$('#app').hasAttribute('data-initial-shell');if(path.startsWith('/package/demo-')){path='/package/'+normalizeProductId(path.slice(9));history.replaceState({},'',path+location.search+location.hash);}let content,title; if(path==='/'){content=home();title='Início';}else if(path==='/catalog'||path==='/search'||path.startsWith('/category/')){const q=new URLSearchParams(location.search).get('q')||'';filters.query=q;content=catalogPage(path.startsWith('/category/')?decodeURIComponent(path.split('/')[2]):null,path==='/search'?q:'');title='Catálogo';}else if(path.startsWith('/package/')){content=productPage(decodeURIComponent(path.slice(9)));title=products.find(p=>p.id===decodeURIComponent(path.slice(9)))?.name||'Produto';}else if(['/login','/register'].includes(path)){content=authPage(path==='/register');title=path==='/login'?'Entrar':'Criar conta';}else if(path==='/checkout'){content=checkout();title='Checkout';}else if(path==='/account'||path.startsWith('/account/orders')){content=accountPage();title='Minha conta';}else if(path==='/faq'){content=`<div class="container page">${breadcrumbs('Perguntas frequentes')}${heading('COMO PODEMOS AJUDAR?','Perguntas frequentes','Tudo o que você precisa saber antes de começar sua jornada.').replace('<h2>','<h1>').replace('</h2>','</h1>')}${faqList(true)}<div class="support-box"><h2>Acompanhe seus pedidos</h2><p>Consulte os detalhes das suas compras na área da sua conta.</p><a class="btn" href="/account/orders">Ver meus pedidos ${icon('arrow')}</a></div></div>`;title='Perguntas frequentes';}else if(['/terms','/privacidade'].includes(path)){content=legalPage(path==='/privacidade');title=path==='/terms'?'Termos de uso':'Privacidade';}else{content=notFound();title='Página não encontrada';}mountPage(header()+`<main id="main" tabindex="-1">${content}</main>`+footer(),initialShell);document.title=path==='/'?'REALBUX':`REALBUX — ${title}`;updateResults();loadOrders();if(path==='/')hydrateHomeProducts();trackNavigation(path.startsWith('/package/')?products.find(p=>p.id===decodeURIComponent(path.slice(9))):null,cartItems());}
 document.addEventListener('error',e=>{
  const img=e.target;if(!(img instanceof HTMLImageElement))return;
  if(img.hasAttribute('data-original-product')){img.remove();return;}
@@ -190,10 +203,16 @@ document.addEventListener('keydown',e=>{
   const tab=e.target.closest('[role=tab]');if(tab&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const tabs=[...document.querySelectorAll('[role=tab]')];const next=tabs[(tabs.indexOf(tab)+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];next.focus();next.click();}
 });
 window.addEventListener('popstate',()=>{closeModal();render();});
-// Public content renders immediately; account lookup never blocks the banners.
-render();if(location.hash)setTimeout(()=>{try{$(location.hash)?.scrollIntoView();}catch{}},50);
+// Let the pre-rendered banners paint before mounting the rest of the catalog.
 const sessionRevision=authRevision;
-try{const session=await api('me');if(sessionRevision===authRevision)user=session.user;}catch{if(sessionRevision===authRevision)toast('Não foi possível conectar ao servidor. Tente recarregar a página.');}
+const sessionLookup=api('me').catch(error=>({user:null,lookupError:error}));
+if(location.pathname==='/'&&$('#app').hasAttribute('data-initial-shell')){
+ $('#app').insertAdjacentHTML('afterbegin',header());
+ trackNavigation(null,cartItems());
+ await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+}
+render();if(location.hash)setTimeout(()=>{try{$(location.hash)?.scrollIntoView();}catch{}},50);
+try{const session=await sessionLookup;if(session.lookupError)throw session.lookupError;if(sessionRevision===authRevision)user=session.user;}catch{if(sessionRevision===authRevision)toast('Não foi possível conectar ao servidor. Tente recarregar a página.');}
 authLoading=false;
 if(['/login','/register','/checkout'].includes(location.pathname)||location.pathname.startsWith('/account'))render();
 else if(user&&$('.header'))$('.header').outerHTML=header();
