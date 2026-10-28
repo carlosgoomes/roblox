@@ -1,3 +1,4 @@
+import { deliveryDescription } from './store-policy.js';
 import { applyPromotion } from './promotion.js';
 import { referenceImage } from './reference-assets.js';
 
@@ -30,33 +31,32 @@ const items = [
   ['conta-especial','Conta Especial + Itens Exclusivos','bloxfruits',59.90,'rare','Especiais','✦'],
   ['jujutsu-gamepass','Gamepass — Jujutsu Shenanigans','jujutsu-shenanigans',24.90,'jujutsu','Gamepasses','◈']
 ];
-const baseProducts = items.map(([id,name,category,price,art,group,symbol],i) => ({ id,name,category,price,art,group,symbol,stock: i === 18 ? 0 : 50, popular: i < 8, oldPrice: Math.round(price * 1.3 * 100) / 100, image: referenceImage(`product:${id}`, `/assets/${art}.svg`), fallbackImage: `/assets/${art}.svg`, source: i < 8 ? 'reference-html' : 'demo', description: 'Produto digital para o universo Roblox. Confira as informações e o prazo de entrega antes de comprar.', demo: true }));
-// The reference total (121) was supplied by the user. Additional entries are
-// explicit demo content; their individual names/prices are not scraped stock.
+const baseProducts = items.map(([id,name,category,price,art,group,symbol],i) => ({ id,name,category,price,art,group,symbol,stock: i === 18 ? 0 : 50, popular: i < 8, oldPrice: Math.round(price * 1.3 * 100) / 100, image: referenceImage(`product:${id}`, `/assets/${art}.svg`), fallbackImage: `/assets/${art}.svg`, description: 'Produto digital para o universo Roblox. Confira as informações e o prazo de entrega antes de comprar.' }));
+// Merchant confirmed products, quantities and prices on 2026-10-27. Checkout still awaits payment integration; see OPERACAO.md.
 const fruits = ['Rocket','Spin','Chop','Spring','Bomb','Smoke','Spike','Flame','Falcon','Sand','Dark','Diamond','Light','Rubber','Barrier','Ghost','Magma','Quake','Buddha','Love','Spider','Phoenix','Portal','Rumble'];
 const generated=[];
-function demo(id,name,category,group,art,label,price) {
-  generated.push({id:`demo-${id}`,name,category,group,art,thumbnailLabel:label,price,oldPrice:Math.round(price*1.3*100)/100,stock:50,popular:false,symbol:'',image:`/assets/${art}.svg`,fallbackImage:`/assets/${art}.svg`,demo:true,source:'demo-generated',description:'Item ilustrativo para demonstrar o catálogo. Nome, preço e disponibilidade não representam o estoque da loja original.'});
+function addProduct(id,name,category,group,art,label,price) {
+  generated.push({id,name,category,group,art,thumbnailLabel:label,price,oldPrice:Math.round(price*1.3*100)/100,stock:50,popular:false,symbol:'',image:`/assets/${art}.svg`,fallbackImage:`/assets/${art}.svg`,description:'Produto digital para o universo Roblox. Confira os recursos incluídos e as condições de recebimento antes de comprar.'});
 }
-fruits.forEach((fruit,i)=>demo(`fruit-${fruit.toLowerCase()}`,`${fruit} no Inventário + Level Máximo`,'bloxfruits','Frutas no inventário','fruits',fruit,9.9+i));
-['CDK + Soul Guitar','TTK + Godhuman','Darkblade + Godhuman','Shark Anchor + Godhuman','Dragon Trident + Godhuman','Spikey Trident + Godhuman','Hallow Scythe + Godhuman','Pole V2 + Godhuman'].forEach((name,i)=>demo(`pvp-${i}`,`Conta PVP — ${name}`,'bloxfruits','Contas PVP','sword',name,24.9+i*3));
-['Human','Shark','Angel','Rabbit','Ghoul','Cyborg'].forEach((race,i)=>demo(`race-${race.toLowerCase()}`,`Raça ${race} V4 + Level Máximo`,'bloxfruits','Raças V4','sword',`${race} V4`,29.9+i*4));
-fruits.forEach((fruit,i)=>demo(`permanent-${fruit.toLowerCase()}`,`${fruit} Permanente`,'gamepass-blox-fruits','Frutas permanentes',fruit==='Dark'?'dragon':'ice',`${fruit} Permanente`,14.9+i*5));
-['2X Money','Fast Boats','2X Drop Chance','Fruit Notifier','Dark Blade','+1 Fruit Storage','2X Boss Drops','VIP Blox Fruits'].forEach((name,i)=>demo(`pass-${i}`,name,i<4?'gamepass-blox-fruits':'bloxfruits','Gamepasses','gamepass',name,19.9+i*7));
-[['Style Slot','Slot de Estilo Adicional'],['Style Slot','Pacote 3 Slots de Estilo'],['Flow Slot','Slot de Flow Adicional'],['Flow Slot','Pacote 3 Slots de Flow'],['Spins','10 Lucky Style Spins'],['Spins','25 Lucky Style Spins'],['Spins','100 Style Spins'],['Spins','10 Lucky Flow Spins'],['Spins','25 Lucky Flow Spins'],['Dinheiro','Pacote de Dinheiro Pequeno'],['Dinheiro','Pacote de Dinheiro Médio'],['Dinheiro','Pacote de Dinheiro Grande']].forEach(([group,name],i)=>demo(`blue-${i}`,`${name} — Blue Lock`,'blue-lock',group,'blue',name,7.9+i*3));
-[2010,2011,2012,2013,2014,2015,2016,2017].forEach((year,i)=>demo(`account-${year}`,`Conta Roblox de ${year}`,'contas-antigas-raras','Contas raras','rare',`Conta ${year}`,59.9-i*5));
-[['Gamepasses','Early Access'],['Gamepasses','VIP'],['Gamepasses','Emote Slots'],['Caixas raras','5X Chromatic Box'],['Caixas raras','10X Chromatic Box'],['Caixas raras','Pacote de Caixas Especiais']].forEach(([group,name],i)=>demo(`jujutsu-${i}`,`${name} — Jujutsu Shenanigans`,'jujutsu-shenanigans',group,'jujutsu',name,9.9+i*8));
-[['Mês das Crianças','Conta Especial — Pacote A','rare'],['Mês das Crianças','Conta Especial — Pacote B','rare'],['Promoção relâmpago','Conta Level Máximo + Magma','fruits'],['Caixas raras','Caixa de Contas Épicas','rare'],['Especiais','Conta Colecionador — Pacote Especial','sword']].forEach(([group,name,art],i)=>demo(`special-${i}`,name,'bloxfruits',group,art,name,8.9+i*9));
-export const products=[...baseProducts,...generated].map(applyPromotion);
-if(products.length!==121)throw new Error('O catálogo demonstrativo deve conter 121 produtos.');
+fruits.forEach((fruit,i)=>addProduct(`fruit-${fruit.toLowerCase()}`,`${fruit} no Inventário + Level Máximo`,'bloxfruits','Frutas no inventário','fruits',fruit,9.9+i));
+['CDK + Soul Guitar','TTK + Godhuman','Darkblade + Godhuman','Shark Anchor + Godhuman','Dragon Trident + Godhuman','Spikey Trident + Godhuman','Hallow Scythe + Godhuman','Pole V2 + Godhuman'].forEach((name,i)=>addProduct(`pvp-${i}`,`Conta PVP — ${name}`,'bloxfruits','Contas PVP','sword',name,24.9+i*3));
+['Human','Shark','Angel','Rabbit','Ghoul','Cyborg'].forEach((race,i)=>addProduct(`race-${race.toLowerCase()}`,`Raça ${race} V4 + Level Máximo`,'bloxfruits','Raças V4','sword',`${race} V4`,29.9+i*4));
+fruits.forEach((fruit,i)=>addProduct(`permanent-${fruit.toLowerCase()}`,`${fruit} Permanente`,'gamepass-blox-fruits','Frutas permanentes',fruit==='Dark'?'dragon':'ice',`${fruit} Permanente`,14.9+i*5));
+['2X Money','Fast Boats','2X Drop Chance','Fruit Notifier','Dark Blade','+1 Fruit Storage','2X Boss Drops','VIP Blox Fruits'].forEach((name,i)=>addProduct(`pass-${i}`,name,i<4?'gamepass-blox-fruits':'bloxfruits','Gamepasses','gamepass',name,19.9+i*7));
+[['Style Slot','Slot de Estilo Adicional'],['Style Slot','Pacote 3 Slots de Estilo'],['Flow Slot','Slot de Flow Adicional'],['Flow Slot','Pacote 3 Slots de Flow'],['Spins','10 Lucky Style Spins'],['Spins','25 Lucky Style Spins'],['Spins','100 Style Spins'],['Spins','10 Lucky Flow Spins'],['Spins','25 Lucky Flow Spins'],['Dinheiro','Pacote de Dinheiro Pequeno'],['Dinheiro','Pacote de Dinheiro Médio'],['Dinheiro','Pacote de Dinheiro Grande']].forEach(([group,name],i)=>addProduct(`blue-${i}`,`${name} — Blue Lock`,'blue-lock',group,'blue',name,7.9+i*3));
+[2010,2011,2012,2013,2014,2015,2016,2017].forEach((year,i)=>addProduct(`account-${year}`,`Conta Roblox de ${year}`,'contas-antigas-raras','Contas raras','rare',`Conta ${year}`,59.9-i*5));
+[['Gamepasses','Early Access'],['Gamepasses','VIP'],['Gamepasses','Emote Slots'],['Caixas raras','5X Chromatic Box'],['Caixas raras','10X Chromatic Box'],['Caixas raras','Pacote de Caixas Especiais']].forEach(([group,name],i)=>addProduct(`jujutsu-${i}`,`${name} — Jujutsu Shenanigans`,'jujutsu-shenanigans',group,'jujutsu',name,9.9+i*8));
+[['Mês das Crianças','Conta Especial — Pacote A','rare'],['Mês das Crianças','Conta Especial — Pacote B','rare'],['Promoção relâmpago','Conta Level Máximo + Magma','fruits'],['Caixas raras','Caixa de Contas Épicas','rare'],['Especiais','Conta Colecionador — Pacote Especial','sword']].forEach(([group,name,art],i)=>addProduct(`special-${i}`,name,'bloxfruits',group,art,name,8.9+i*9));
+export const products=[...baseProducts,...generated].map(product=>({...applyPromotion(product),description:`${product.description} ${deliveryDescription}`}));
+if(products.length!==121)throw new Error('O catálogo deve conter 121 produtos.');
 
 export const faqs = [
-  ['Como funciona a entrega?', 'Na referência, contas são entregues após a confirmação do pagamento, gamepasses em até 24 horas e Robux em 5 a 7 dias úteis. Nesta recriação, pedidos são de demonstração: não há cobrança nem entrega de itens.'],
-  ['É confiável comprar na REALBUX?', 'O HTML de referência informa pagamento via Pix e suporte dedicado. Esta versão é uma recriação independente em demonstração e não processa pagamentos.'],
-  ['Precisa de ajuda?', 'Consulte as perguntas frequentes para informações sobre o catálogo, a conta e os pedidos de demonstração. O histórico de compras está disponível em Minha conta.'],
-  ['Preciso informar minha senha do Roblox?', 'Não. Esta versão nunca solicita senha da sua conta Roblox. O cadastro local é exclusivo desta aplicação.'],
-  ['Onde acompanho meus pedidos?', 'Entre na sua conta e abra “Meus pedidos”. Cada pedido de demonstração fica salvo na sua conta, com os itens, o valor e o status.'],
-  ['Posso alterar meu carrinho?', 'Sim. Use os botões + e − para alterar quantidades, ou a lixeira para remover um produto. O carrinho fica salvo neste navegador.'],
-  ['Quais são as formas de pagamento?', 'A referência utiliza Pix. Nesta recriação o checkout apenas registra pedidos de demonstração, sem QR Code ou transação financeira.'],
-  ['Os preços e estoques são oficiais?', 'Não. O catálogo contém 121 itens de demonstração, conforme o total informado pelo usuário. O HTML fornecido identifica oito produtos, mas não inclui o inventário completo, preços ou estoque. Os demais nomes, ilustrações e valores são exemplos editáveis.']
+  ['Como funciona a entrega?', deliveryDescription],
+  ['Como protejo minha conta?', 'Use uma senha exclusiva para sua conta REALBUX. Nunca informe aqui a senha da sua conta Roblox.'],
+  ['Precisa de ajuda?', 'Consulte as perguntas frequentes para informações sobre o catálogo, sua conta e seus pedidos.'],
+  ['Preciso informar minha senha do Roblox?', 'Não. A REALBUX não solicita a senha da sua conta Roblox nesta aplicação.'],
+  ['Onde acompanho meus pedidos?', 'Entre na sua conta e abra Meus pedidos para consultar as compras registradas.'],
+  ['Posso alterar meu carrinho?', 'Sim. Use os botões + e − para alterar quantidades, ou remova um produto. O carrinho fica salvo neste navegador.'],
+  ['Quais são as formas de pagamento?', 'As opções de pagamento são apresentadas no checkout quando o serviço está disponível. No momento, a finalização de compras está indisponível.'],
+  ['O carrinho reserva os produtos?', 'Não. Adicionar um item ao carrinho não confirma uma compra nem garante sua disponibilidade. Confira as condições antes de concluir o pedido.']
 ];

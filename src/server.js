@@ -86,22 +86,9 @@ export async function handler(req,res) {
         await db.prepare('UPDATE users SET password=? WHERE id=?').run(passwordHash(data.password),user.id);
         await db.prepare('DELETE FROM sessions WHERE user_id=?').run(user.id);await setSession(res,user.id,db);return send({ok:true});
       }
-      if(path==='/api/orders' && req.method==='GET') return send({orders:(await db.prepare('SELECT * FROM orders WHERE user_id=? ORDER BY created DESC').all(user.id)).map(o=>({...o,items:JSON.parse(o.items),total:o.total/100}))});
+      if(path==='/api/orders' && req.method==='GET') return send({orders:(await db.prepare("SELECT * FROM orders WHERE user_id=? AND status IN ('pending_payment','paid','fulfilled','cancelled','refunded') ORDER BY created DESC").all(user.id)).map(o=>({...o,items:JSON.parse(o.items),total:o.total/100}))});
       if(path==='/api/orders' && req.method==='POST') {
-        const data=await body(req);
-        if(data.accepted!==true) fail('Aceite os termos para continuar.');
-        if(typeof data.username!=='string' || !/^[A-Za-z0-9_]{3,20}$/.test(data.username)) fail('Informe um usuário Roblox de 3 a 20 caracteres (letras, números ou _).');
-        if(!Array.isArray(data.items) || !data.items.length || data.items.length>products.length) fail('Seu carrinho está vazio ou inválido.');
-        const seen=new Set();
-        const items=data.items.map(item=>{
-          if(!item || typeof item!=='object') fail('Produto inválido.');
-          const product=products.find(p=>p.id===item.id);
-          if(!product || seen.has(item.id) || !Number.isInteger(item.quantity) || item.quantity<1 || item.quantity>product.stock) fail('Um produto ou quantidade está indisponível.');
-          seen.add(item.id);return {id:product.id,name:product.name,price:product.price,quantity:item.quantity,image:product.image};
-        });
-        const total=items.reduce((a,p)=>a+Math.round(p.price*100)*p.quantity,0);const id=randomUUID();const created=new Date().toISOString();
-        await db.prepare('INSERT INTO orders VALUES(?,?,?,?,?,?,?)').run(id,user.id,created,total,JSON.stringify(items),data.username,'demo');
-        return send({order:{id,created,total:total/100,items,status:'demo',username:data.username}},201);
+        return send({error:'Pagamento indisponível no momento. Seu carrinho foi mantido.',code:'CHECKOUT_UNAVAILABLE'},503);
       }
       fail('Rota não encontrada.',404);
     }

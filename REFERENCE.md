@@ -20,13 +20,13 @@ npm run assets:sync
 
 O script preserva a verificação TLS, verifica status, tipo e assinatura do arquivo e só então grava o recurso local e atualiza `public/reference-cache.js`. As imagens passam a ser servidas de `public/assets/reference/`. O download local ainda não foi confirmado neste ambiente, pois os domínios continuam bloqueados pelo proxy.
 
-## Quantidade de produtos
+## Catálogo
 
-O usuário informou **121 produtos** na loja original. O catálogo demonstrativo agora contém exatamente **121 itens**, preservando os IDs dos 20 itens que já existiam. Oito deles correspondem a produtos identificados no HTML pelas avaliações. Os outros **113 itens** são exemplos ilustrativos, com nomes e combinações de contas/gamepasses, não uma transcrição confirmada dos 113 produtos restantes da loja original.
+O catálogo inicial foi preparado com nomes identificados no HTML e entradas adicionais para chegar aos 121 produtos informados pelo usuário. Posteriormente, o usuário confirmou que os 121 produtos, os preços com 75% OFF e as quantidades foram conferidos para venda real.
 
-O documento fornecido tem os contêineres das categorias, mas os produtos são carregados por JavaScript. Seus nomes, preços, estoques e URLs individuais não estão presentes. Para igualar os 121 produtos reais, ainda é necessário acessar o catálogo completo ou receber uma exportação. Não confunda os exemplos com ofertas, estoque ou preços oficiais.
+A interface atual não apresenta avisos de demonstração, depoimentos copiados ou contadores de clientes da referência. Os IDs novos não usam `demo-`; links e carrinhos antigos são compatíveis. O histórico de preparação permanece nesta documentação e no Git.
 
-O conteúdo fica em `public/catalog.js`; `source: 'reference-html'` identifica os oito itens encontrados e `demo`/`demo-generated` identifica os exemplos. Todos os preços, estoques e pedidos continuam de demonstração.
+A entrega imediata no e-mail após confirmação de pagamento foi definida pelo usuário. Pagamento e envio automático ainda precisam de integração; a finalização permanece indisponível. Veja OPERACAO.md.
 
 ## Identidade REALBUX
 
