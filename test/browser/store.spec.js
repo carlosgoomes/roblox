@@ -186,3 +186,18 @@ test('banners responsivos aparecem enquanto a consulta da conta ainda está pend
   expect(await page.locator('.reference-hero img').evaluate(img=>img.currentSrc.endsWith('.webp'))).toBeTruthy();
  }finally{release();}
 });
+test('a primeira imagem aparece pelo HTML antes de carregar o JavaScript da loja',async({page})=>{
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route(/\/dist\/app-[^/]+\.js$/,async route=>{await gate;await route.continue();});
+ try{
+  await page.goto('/',{waitUntil:'commit'});
+  await expect(page.locator('.reference-hero img')).toBeVisible();
+  await expect(page.locator('.promo-banner img')).toHaveJSProperty('complete',true);
+  await expect(page.locator('#store')).toHaveCount(0);
+  const hero=await page.locator('.home-hero-layout').elementHandle();
+  release();
+  await expect(page.locator('#store .product-card')).toHaveCount(121);
+  expect(await hero.evaluate(node=>node.isConnected)).toBeTruthy();
+  await expect(page.locator('.home-hero-layout')).toHaveCount(1);
+ }finally{release();}
+});

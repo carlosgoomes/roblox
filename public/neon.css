@@ -51,3 +51,5 @@ body{isolation:isolate;background-color:#100918}
 @media(prefers-reduced-motion:reduce){.ambient-scene *{animation:none!important;will-change:auto!important}.ambient-grid{transform:perspective(750px) rotateX(48deg);opacity:.25}.ambient-stars i{opacity:.25}.btn,.promo-cta,.login-btn,.cart-btn,.chip,.icon-btn,.product-card,.category-card{transition:none!important}.btn::before,.promo-cta::before,.login-btn::before,.neon-ripple{display:none!important}.is-entering{animation:none!important}}
 
 @media(max-width:767px){.ambient-grid{animation:none;opacity:.3}.ambient-aurora.three{display:none}.ambient-stars i:nth-child(n+5){display:none}.product-card{backdrop-filter:none}}
+
+.client-route #app[data-initial-shell]{display:none}body{background-size:50px 50px,50px 50px,100% 1800px;background-repeat:repeat,repeat,no-repeat}

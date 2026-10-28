@@ -46,7 +46,7 @@ export async function handler(req,res) {
   res.setHeader('X-Content-Type-Options','nosniff');
   res.setHeader('Referrer-Policy','same-origin');
   res.setHeader('X-Frame-Options','DENY');
-  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data: https://www.facebook.com https://facebook.com; style-src 'self'; script-src 'self' https://connect.facebook.net; connect-src 'self' https://www.facebook.com https://facebook.com https://connect.facebook.net; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data: https://www.facebook.com https://facebook.com; style-src 'self'; script-src 'self' 'sha256-CPUertIWSVQOumx5pphsjhM/VkTqNf75DoVLidrkaYU=' https://connect.facebook.net; connect-src 'self' https://www.facebook.com https://facebook.com https://connect.facebook.net; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
   const send=(data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
   try {
     const url=new URL(req.url,'http://localhost'); const path=url.pathname;

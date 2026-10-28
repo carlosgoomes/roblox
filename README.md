@@ -76,3 +76,5 @@ Para regenerar as imagens, instale ImageMagick 7 e execute npm run assets:optimi
 npm run build usa esbuild para gerar JavaScript e CSS compactados em public/dist e atualizar as referências no HTML. O diretório dist não é versionado; o build local e a Vercel o recriam. npm start, npm run dev e npm run test:e2e executam o build antes de iniciar. Após alterar o frontend durante o desenvolvimento, execute novamente npm run build e recarregue a página.
 
 Arquivos com hash usam cache imutável. HTML e arquivos de configuração continuam revalidando; as APIs de catálogo e conta permanecem com no-store. O conteúdo público renderiza antes da consulta de sessão, sem refazer o banner quando a sessão chega. O pixel continua ativo e seu SDK tem prioridade baixa, atrás das imagens principais.
+
+Os banners e categorias iniciais também são pré-renderizados no HTML durante o build. A aplicação preserva esses elementos ao iniciar, evitando baixar ou pintar o banner novamente. Um pequeno script de identificação da rota, autorizado por hash na CSP, impede a exibição da capa em páginas internas antes da inicialização.
