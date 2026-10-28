@@ -1,3 +1,4 @@
+import {checkoutView} from './checkout-view.js';
 import { deliveryDescription } from './store-policy.js';
 import { promotion } from './promotion.js';
 import { artworkForProduct } from './product-artwork.js';
@@ -16,7 +17,7 @@ const paths = {
  check:'M4 12l5 5L20 6',heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8',
 };
 const icon = n => `<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[n]||paths.arrow}"/></svg>`;
-let user=null, cart=[], filters={group:'',sort:'popular',query:''}, modalTrigger=null;
+let user=null, cart=[], filters={group:'',sort:'popular',query:''}, modalTrigger=null, currentPayment=null, checkingPayment=false;
 try {const saved=JSON.parse(localStorage.getItem('realm-cart')||'[]');if(Array.isArray(saved)) cart=saved.map(x=>({...x,id:typeof x?.id==='string'?x.id.replace(/^demo-/,''):x?.id})).filter(x=>products.some(p=>p.id===x.id && Number.isInteger(x.quantity) && x.quantity>0 && x.quantity<=p.stock));} catch {}
 const cartItems=()=>cart.map(x=>({...products.find(p=>p.id===x.id),quantity:x.quantity}));
 const total=()=>cartItems().reduce((n,p)=>n+p.price*p.quantity,0);
@@ -28,7 +29,7 @@ async function api(path,data) {
 }
 function toast(message) {const el=document.createElement('div');el.className='toast';el.textContent=message;$('#notifications').append(el);setTimeout(()=>el.remove(),4000);}
 function saveCart() {try{localStorage.setItem('realm-cart',JSON.stringify(cart));}catch{toast('Seu navegador não permitiu salvar o carrinho.');}document.querySelectorAll('[data-cart-count]').forEach(e=>e.textContent=count());}
-function add(id,qty=1) {const p=products.find(p=>p.id===id);if(!p || !p.stock)return;const x=cart.find(c=>c.id===id);if((x?.quantity||0)+qty>p.stock)return toast('Quantidade maior que o limite disponível para este item.');if(x)x.quantity+=qty;else cart.push({id,quantity:qty});saveCart();toast('Produto adicionado ao carrinho');openCart();}
+function add(id,qty=1) {const p=products.find(p=>p.id===id);if(!p || !p.stock)return;const x=cart.find(c=>c.id===id);if((x?.quantity||0)+qty>p.stock)return toast('Quantidade maior que o limite disponível para este item.');if(x)x.quantity+=qty;else cart.push({id,quantity:qty});if(currentPayment&&currentPayment.status!=='pending_payment'){currentPayment=null;try{sessionStorage.removeItem('realm-pending-payment');}catch{}}saveCart();toast('Produto adicionado ao carrinho');openCart();}
 function navigate(path) {closeModal();history.pushState({},'',path);filters={group:'',sort:'popular',query:''};render();window.scrollTo(0,0);if(location.hash)setTimeout(()=>$(location.hash)?.scrollIntoView({behavior:'smooth'}),50);}
 function imageTag(src,alt,fallback,extra='') {return `<img src="${escape(src)}" alt="${escape(alt)}" data-fallback="${escape(fallback)}" ${extra}>`;}
 function spriteSvg(tile,extraClass='') {return `<svg class="product-sprite ${extraClass}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"><svg width="1" height="1" viewBox="${tile.column+.035} ${tile.row+.035} .93 .93" overflow="hidden"><image href="${tile.url}" width="6" height="6"/></svg></svg>`;}
@@ -62,11 +63,38 @@ function closeModal() {$('#overlay').innerHTML='';document.body.classList.remove
 function openCart() {openModal(`<div class="drawer-title"><h2>Seu carrinho <span class="pill">${count()}</span></h2><button class="icon-btn" data-action="close" aria-label="Fechar carrinho">×</button></div><div class="drawer-content">${cart.length?cartRows():`<div class="empty-state">${icon('cart')}<h3>Seu carrinho está vazio.</h3><p>Assim que você escolher um produto, ele aparecerá aqui!</p><a class="btn" href="/catalog">Explorar produtos</a></div>`}</div>${cart.length?`<div class="drawer-bottom"><div class="total-row"><span>Valor total</span><strong>${money(total())}</strong></div><a href="/checkout" class="btn full">Ir para a compra ${icon('arrow')}</a><button class="text-button" data-action="close">Continuar comprando</button></div>`:''}`);}
 function authPage(register=false) {const next=new URLSearchParams(location.search).get('next')==='checkout'?'?next=checkout':'';if(user)return accountPage();return `<div class="container page auth-layout"><div class="auth-pitch"><span class="eyebrow">SEU UNIVERSO REALBUX</span><h1>O próximo nível<br>começa com você<span>.</span></h1><p>Seus favoritos, suas compras, sua jornada.<br>Tudo em um só lugar.</p><img src="/assets/hero.svg" alt="Universo de blocos"></div><section class="auth-card"><a class="brand" href="/">${brandImage()}</a><h2>${register?'Crie sua conta':'Bom te ver por aqui!'}</h2><p>${register?'Comece sua jornada na REALBUX.':'Entre para acompanhar seus pedidos.'}</p><form id="auth-form" data-register="${register}">${register?'<label for="name">Seu nome</label><input id="name" name="name" minlength="2" maxlength="80" autocomplete="name" required placeholder="Como podemos te chamar?">':''}<label for="email">E-mail</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="voce@exemplo.com"><label for="password">Senha</label><div class="password-field"><input id="password" name="password" type="password" minlength="8" maxlength="128" autocomplete="${register?'new-password':'current-password'}" required placeholder="No mínimo 8 caracteres"><button type="button" data-action="toggle-password" aria-label="Mostrar senha">◉</button></div>${register?'<label class="checkbox"><input name="accepted" type="checkbox" required><span>Li e aceito os <a href="/terms">termos de uso</a> e a <a href="/privacidade">política de privacidade</a>.</span></label>':''}<p class="form-error" role="alert"></p><button class="btn full" type="submit">${register?'Criar conta':'Entrar'} ${icon('arrow')}</button></form><p class="auth-switch">${register?`Já tem conta? <a href="/login${next}">Entrar</a>`:`Ainda não tem conta? <a href="/register${next}">Cadastre-se</a>`}</p><div class="account-note small">Use uma senha exclusiva, diferente da senha da sua conta Roblox.</div></section></div>`;}
 function checkout() {
- if(!cart.length)return `<div class="container page">${breadcrumbs('Checkout')}<div class="empty-state">${icon('cart')}<h1>Seu carrinho está vazio</h1><p>Escolha um produto para continuar.</p><a class="btn" href="/catalog">Explorar catálogo</a></div></div>`;
- return `<div class="container page">${breadcrumbs('Checkout')}<h1>Finalizar compra</h1><p class="subtle">Confira os itens e pague com segurança na Velani.</p><div class="checkout-grid"><section class="panel"><h2>Pagar com a Velani</h2><p>Cada pagamento corresponde a <strong>1 unidade de um produto</strong>. Para comprar mais unidades ou produtos, faça os pagamentos separadamente.</p><p>${deliveryDescription} Confira seu e-mail no checkout.</p><div class="checkout-payments">${cartItems().map(p=>`<article class="checkout-payment" data-checkout-product="${escape(p.id)}"><h3>${escape(p.name)}</h3><p class="small subtle">${p.quantity} unidade${p.quantity>1?'s':''} no carrinho · ${money(p.price)} por unidade</p>${p.checkoutUrl?`<a class="btn full" href="${escape(p.checkoutUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Pagar 1 unidade de ${escape(p.name)} na Velani por ${money(p.price)}">Pagar 1 unidade · ${money(p.price)} ${icon('arrow')}</a>`:'<button class="btn full" disabled>Produto indisponível para pagamento</button>'}</article>`).join('')}</div><p class="small subtle">O checkout abre em uma nova aba. Seu carrinho permanece salvo. Acompanhe a confirmação na Velani e no e-mail da compra.</p><a class="text-button" href="/catalog">Continuar comprando</a></section><aside class="panel order-summary"><div class="section-top"><h2>Resumo do carrinho</h2><button class="text-button" data-action="cart">Editar</button></div>${cartRows()}<div class="summary-lines"><div class="total-row"><strong>Total dos itens selecionados</strong><strong>${money(total())}</strong></div></div><p class="small subtle">Os pagamentos são separados por unidade. Adicionar itens ao carrinho não confirma a compra nem reserva disponibilidade.</p></aside></div></div>`;
+ return checkoutView({user,items:cartItems(),total:total(),payment:currentPayment,escape,money,icon,breadcrumbs,productImage});
 }
+function rememberPayment(order) {
+ currentPayment=order;
+ try{sessionStorage.setItem('realm-pending-payment',order.id);}catch{}
+ if(['paid','fulfilled'].includes(order.status)){
+  let handled=[];
+  try{handled=JSON.parse(sessionStorage.getItem('realm-cleared-payments')||'[]');if(!Array.isArray(handled))handled=[];}catch{}
+  if(!handled.includes(order.id)){
+   for(const paid of order.items){const item=cart.find(p=>p.id===paid.id);if(item)item.quantity=Math.max(0,item.quantity-paid.quantity);}
+   cart=cart.filter(p=>p.quantity>0);saveCart();
+   try{sessionStorage.setItem('realm-cleared-payments',JSON.stringify([...handled,order.id].slice(-50)));}catch{}
+  }
+ }
+}
+async function refreshPayment(silent=false) {
+ if(!currentPayment||checkingPayment||!user)return;
+ const id=currentPayment.id;checkingPayment=true;
+ try{
+  const {order}=await api('payment',{id});
+  if(!user||currentPayment?.id!==id)return;
+  rememberPayment(order);
+  if(location.pathname==='/checkout')render();
+ }catch(e){
+  const target=$('.payment-status-error');
+  if(target)target.textContent=e.message;
+  else if(!silent)toast(e.message);
+ }finally{checkingPayment=false;}
+}
+
 function accountPage() {if(!user)return `<div class="container page"><div class="empty-state"><h1>Sua conta REALBUX</h1><p>Entre para ver seus dados e pedidos.</p><a class="btn" href="/login">Entrar</a></div></div>`;const orders=location.pathname.includes('orders');return `<div class="container page">${breadcrumbs('Minha conta')}<div class="section-top"><div><span class="eyebrow">BEM-VINDO DE VOLTA</span><h1>Olá, ${escape(user.name)} ${icon('heart')}</h1></div><button class="btn outline compact" data-action="logout">Sair da conta</button></div><div class="category-tabs"><a class="chip ${!orders?'active':''}" href="/account">Meus dados</a><a class="chip ${orders?'active':''}" href="/account/orders">Meus pedidos</a></div>${orders?'<div id="orders" aria-live="polite"><p>Carregando pedidos…</p></div>':`<div class="account-grid"><form class="panel" id="profile-form"><h2>Meus dados</h2><label for="profile-name">Nome</label><input id="profile-name" name="name" minlength="2" maxlength="80" value="${escape(user.name)}" required><label for="profile-email">E-mail</label><input id="profile-email" value="${escape(user.email)}" disabled><p class="form-error" role="alert"></p><button class="btn" type="submit">Salvar alterações</button></form><form class="panel" id="password-form"><h2>Alterar senha</h2><label for="current">Senha atual</label><input id="current" name="current" type="password" autocomplete="current-password" required maxlength="128"><label for="new-password">Nova senha</label><input id="new-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required><p class="form-error" role="alert"></p><button class="btn outline" type="submit">Atualizar senha</button></form></div>`}</div>`;}
-async function loadOrders() {if(!$('#orders'))return;try{const {orders}=await api('orders');if(!$('#orders'))return;const id=location.pathname.split('/')[3];const selected=id?orders.filter(o=>o.id===id):orders;$('#orders').innerHTML=selected.length?selected.map(o=>`<article class="panel order-card"><div class="section-top"><div><span class="eyebrow">PEDIDO #${o.id.slice(0,8)}</span><h3>${new Date(o.created).toLocaleString('pt-BR')}</h3></div><span class="status">${escape(({pending_payment:'Aguardando pagamento',paid:'Pagamento confirmado',fulfilled:'Entregue',cancelled:'Cancelado',refunded:'Reembolsado'})[o.status]||'Pedido registrado')}</span></div><p class="small subtle">Usuário Roblox: ${escape(o.username)}</p>${o.items.map(p=>`<div class="order-item">${productImage(p)}<span>${escape(p.name)}<small>${p.quantity} × ${money(p.price)}</small></span><strong>${money(p.price*p.quantity)}</strong></div>`).join('')}<div class="total-row"><a href="/account/orders/${o.id}">Ver pedido ${icon('arrow')}</a><strong>${money(o.total)}</strong></div></article>`).join(''):`<div class="empty-state"><h2>${id?'Pedido não encontrado':'Sua história está só começando'}</h2><p>${id?'Este pedido não existe ou não pertence à sua conta.':'Os pagamentos feitos na Velani ainda não aparecem automaticamente aqui. Confira a confirmação na Velani e acompanhe a entrega pelo e-mail informado na compra.'}</p><a class="btn" href="${id?'/account/orders':'/catalog'}">${id?'Voltar aos pedidos':'Explorar catálogo'}</a></div>`;}catch(e){if($('#orders'))$('#orders').innerHTML=`<div class="empty-state"><p>${escape(e.message)}</p><button class="btn" data-action="reload-orders">Tentar novamente</button></div>`;}}
+async function loadOrders() {if(!$('#orders'))return;try{const {orders}=await api('orders');if(!$('#orders'))return;const id=location.pathname.split('/')[3];const selected=id?orders.filter(o=>o.id===id):orders;$('#orders').innerHTML=selected.length?selected.map(o=>`<article class="panel order-card"><div class="section-top"><div><span class="eyebrow">PEDIDO #${o.id.slice(0,8)}</span><h3>${new Date(o.created).toLocaleString('pt-BR')}</h3></div><span class="status">${escape(({pending_payment:'Aguardando pagamento',paid:'Pagamento confirmado',fulfilled:'Entregue',cancelled:'Cancelado',refunded:'Reembolsado'})[o.status]||'Pedido registrado')}</span></div>${o.username?`<p class="small subtle">Usuário Roblox: ${escape(o.username)}</p>`:''}${o.items.map(p=>`<div class="order-item">${productImage(p)}<span>${escape(p.name)}<small>${p.quantity} × ${money(p.price)}</small></span><strong>${money(p.price*p.quantity)}</strong></div>`).join('')}${o.status==='pending_payment'?`<button class="btn full" data-action="resume-payment" data-id="${escape(o.id)}">Ver Pix e verificar pagamento</button>`:''}<div class="total-row"><a href="/account/orders/${o.id}">Ver pedido ${icon('arrow')}</a><strong>${money(o.total)}</strong></div></article>`).join(''):`<div class="empty-state"><h2>${id?'Pedido não encontrado':'Sua história está só começando'}</h2><p>${id?'Este pedido não existe ou não pertence à sua conta.':'Os pedidos pagos pelo carrinho aparecerão aqui. Compras por links individuais da Velani são acompanhadas pelo e-mail. Confira também a confirmação e o e-mail de compras feitas por links individuais da Velani.'}</p><a class="btn" href="${id?'/account/orders':'/catalog'}">${id?'Voltar aos pedidos':'Explorar catálogo'}</a></div>`;}catch(e){if($('#orders'))$('#orders').innerHTML=`<div class="empty-state"><p>${escape(e.message)}</p><button class="btn" data-action="reload-orders">Tentar novamente</button></div>`;}}
 function legalPage(privacy=false) {return `<article class="container page legal">${breadcrumbs(privacy?'Política de privacidade':'Termos de uso')}<span class="eyebrow">INSTITUCIONAL</span><h1>${privacy?'Política de privacidade':'Termos de uso'}</h1>${(privacy?[
  ['1. Dados utilizados','Ao criar sua conta REALBUX, armazenamos nome, e-mail e uma versão protegida da senha. O histórico de pedidos pode conter os itens, valores, status e informações necessárias ao atendimento da compra.'],
  ['2. Finalidade','Utilizamos os dados para autenticar sua conta, manter sua sessão e permitir a consulta dos seus pedidos. Não solicitamos a senha da sua conta Roblox.'],
@@ -77,7 +105,7 @@ function legalPage(privacy=false) {return `<article class="container page legal"
  ['1. Utilização da loja','A REALBUX apresenta produtos digitais relacionados ao universo Roblox. Leia a descrição, os requisitos e as condições de cada item antes de comprar.'],
  ['2. Conta e segurança','Utilize informações corretas e uma senha exclusiva para sua conta REALBUX. Não informe a senha de sua conta Roblox nos formulários deste site.'],
  ['3. Catálogo e carrinho','Adicionar um produto ao carrinho não confirma a compra nem reserva o item. Valores, quantidades e disponibilidade devem ser conferidos antes da conclusão do pedido.'],
- ['4. Pedidos e pagamentos','O pagamento é processado pela Velani. Cada link de checkout corresponde a uma unidade do produto pelo preço exibido. Produtos e unidades adicionais são pagos separadamente. A entrega depende da confirmação do pagamento. O carrinho não representa um pagamento confirmado.'],
+ ['4. Pedidos e pagamentos','O pagamento é processado pela Velani. O checkout do carrinho gera um único Pix com todos os produtos e quantidades pelo total conferido no servidor. A entrega depende da confirmação do pagamento. O carrinho não representa um pagamento confirmado.'],
  ['5. Entrega e atendimento',deliveryDescription+' Mantenha o e-mail atualizado e verifique também as pastas de spam e promoções.'],
  ['6. Plataformas e direitos','Roblox e os jogos citados pertencem aos seus respectivos titulares. A REALBUX não declara vínculo ou parceria com essas plataformas.']
  ]).map(([h,p])=>`<section><h2>${h}</h2><p>${p}</p></section>`).join('')}<a class="btn outline" href="/">Voltar ao início</a></article>`;}
@@ -107,7 +135,11 @@ document.addEventListener('click',async e=>{
     case 'clear-filters':filters={group:'',query:'',sort:'popular'};$('#filter-query').value='';if($('#filter-group'))$('#filter-group').value='';$('#sort').value='popular';updateResults();break;
     case 'toggle-password':{const input=$('#password');input.type=input.type==='password'?'text':'password';b.setAttribute('aria-label',input.type==='password'?'Mostrar senha':'Ocultar senha');break;}
     case 'buy':case 'buy-now':{const qty=Number($('#quantity').value);const product=products.find(p=>p.id===b.dataset.id);if(!Number.isInteger(qty)||qty<1||qty>product.stock){toast('Selecione uma quantidade válida.');return;}add(b.dataset.id,qty);if(b.dataset.action==='buy-now')navigate('/checkout');break;}
-    case 'logout':try{await api('logout',{});user=null;navigate('/login');toast('Você saiu da sua conta.');}catch(err){toast(err.message);}break;
+    case 'logout':try{await api('logout',{});user=null;currentPayment=null;try{sessionStorage.removeItem('realm-pending-payment');}catch{}navigate('/login');toast('Você saiu da sua conta.');}catch(err){toast(err.message);}break;
+    case 'copy-pix':try{await navigator.clipboard.writeText(currentPayment.payment.pixCode);toast('Código Pix copiado.');}catch{toast('Selecione e copie o código Pix exibido.');}break;
+    case 'refresh-payment':await refreshPayment();break;
+    case 'resume-payment':try{b.disabled=true;rememberPayment((await api('payment',{id:b.dataset.id})).order);navigate('/checkout');}catch(e){toast(e.message);}finally{b.disabled=false;}break;
+    case 'new-payment':currentPayment=null;try{sessionStorage.removeItem('realm-pending-payment');}catch{}render();break;
     case 'reload-orders':loadOrders();break;
   }
 });
@@ -119,6 +151,7 @@ document.addEventListener('submit',async e=>{
   const data=Object.fromEntries(new FormData(form));const button=$('button[type=submit]',form);const error=$('.form-error',form);if(!button)return;button.disabled=true;if(error)error.textContent='';
   try {
     if(form.id==='auth-form'){user=(await api(form.dataset.register==='true'?'register':'login',data)).user;const next=new URLSearchParams(location.search).get('next');navigate(next==='checkout'?'/checkout':'/account');toast('Bem-vindo à REALBUX!');}
+    if(form.id==='checkout-form'){const accountId=user?.id;const {order}=await api('orders',{items:cart.map(p=>({id:p.id,quantity:p.quantity})),accepted:data.accepted==='on'});if(user?.id===accountId){rememberPayment(order);render();}}
     if(form.id==='profile-form'){user=(await api('profile',data)).user;render();toast('Dados atualizados.');}
     if(form.id==='password-form'){await api('password',data);form.reset();toast('Senha atualizada.');}
   }catch(err){if(error)error.textContent=err.message;else toast(err.message);}finally{button.disabled=false;}
@@ -130,3 +163,10 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('popstate',()=>{closeModal();render();});
 try{user=(await api('me')).user;}catch{toast('Não foi possível conectar ao servidor. Tente recarregar a página.');}
 render();if(location.hash)setTimeout(()=>{try{$(location.hash)?.scrollIntoView();}catch{}},50);
+
+setInterval(()=>{if(!document.hidden&&currentPayment?.status==='pending_payment')refreshPayment(true);},10000);
+if(user){
+ let saved;try{saved=sessionStorage.getItem('realm-pending-payment');}catch{}
+ const accountId=user.id;
+ if(saved)api('payment',{id:saved}).then(({order})=>{if(user?.id===accountId){rememberPayment(order);if(location.pathname==='/checkout')render();}}).catch(()=>{try{sessionStorage.removeItem('realm-pending-payment');}catch{}});
+}

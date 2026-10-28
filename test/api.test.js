@@ -1,3 +1,4 @@
+delete process.env.VELANI_SECRET_KEY;
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';

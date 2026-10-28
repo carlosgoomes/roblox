@@ -76,37 +76,54 @@ test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  for(const path of ['/terms','/privacidade','/category/blue-lock','/category/jujutsu-shenanigans','/category/gamepass-blox-fruits','/category/contas-antigas-raras','/missing']){await page.goto(path);await expect(page.locator('main')).not.toBeEmpty();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();}
  expect(errors).toEqual([]);
 });
-test('produtos e quantidades têm pagamentos unitários separados com o valor correto',async({page,context})=>{
- await page.goto('/package/ice-permanente-750-robux');
+test('vários produtos e quantidades são pagos em um Pix, persistem e só limpam o carrinho após confirmação',async({page})=>{
+ const email='payment-'+Date.now()+'-'+test.info().project.name+'@example.test';
+ await page.request.post('/api/register',{data:{name:'Comprador Teste',email,password:'safe-browser-payment'}});
+ const catalog=(await (await page.request.get('/api/catalog')).json()).products;
+ const ice=catalog.find(p=>p.id==='ice-permanente-750-robux'),style=catalog.find(p=>p.id==='blue-lock-style-slot');
+ let paid=false,created=0;
+ const order={id:'browser-payment-order',status:'pending_payment',total:28.46,created:new Date().toISOString(),items:[{...ice,quantity:2},{...style,quantity:1}],payment:{pixCode:'000201-pix-carrinho-teste',qrCodeImage:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=',expiresAt:new Date(Date.now()+900000).toISOString()}};
+ await page.route('**/api/orders',async route=>{
+  if(route.request().method()!=='POST')return route.continue();
+  const data=route.request().postDataJSON();created++;
+  expect(data.items).toHaveLength(2);expect(data.items.find(p=>p.id===ice.id).quantity).toBe(2);
+  expect(data.items.every(p=>!('price' in p))).toBeTruthy();
+  await route.fulfill({json:{order}});
+ });
+ await page.route('**/api/payment',route=>route.fulfill({json:{order:{...order,status:paid?'paid':'pending_payment'}}}));
+ await page.goto('/package/'+ice.id);
  await page.getByLabel('Quantidade',{exact:true}).fill('2');
  await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
- await page.goto('/package/blue-lock-style-slot');
- await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
- await expect(page.locator('.checkout-payment')).toHaveCount(2);
- await expect(page.locator('.checkout-payments')).toContainText('2 unidades no carrinho');
- await expect(page.locator('.checkout-grid>section')).toContainText('1 unidade de um produto');
- const first=page.locator('[data-checkout-product="ice-permanente-750-robux"] a');
- const second=page.locator('[data-checkout-product="blue-lock-style-slot"] a');
- await expect(first).toContainText('R$ 11,23');
- await expect(second).toContainText('R$ 6,00');
- await expect(second).toHaveAttribute('href','https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot');
- await context.route('https://pagamentosegurocheckout.space/**',route=>route.fulfill({contentType:'text/html',body:'<h1>Checkout externo interceptado pelo teste</h1>'}));
- const popupPromise=page.waitForEvent('popup');await second.click();const popup=await popupPromise;
- await expect(popup).toHaveURL('https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot');
- await popup.close();
- await page.reload();await expect(page.locator('.checkout-payment')).toHaveCount(2);
+ await page.goto('/package/'+style.id);await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
+ await expect(page.locator('[data-checkout-product]')).toHaveCount(2);
+ await expect(page.locator('#checkout-total')).toHaveText('R$ 28,46');
+ await page.locator('#checkout-form input[name=accepted]').check();
+ await page.getByRole('button',{name:'Gerar Pix de R$ 28,46',exact:false}).click();
+ await expect(page.getByRole('heading',{name:'Pix de R$ 28,46',exact:true})).toBeVisible();
+ await expect(page.getByLabel('Pix copia e cola',{exact:true})).toHaveValue(order.payment.pixCode);
+ await expect(page.getByRole('img',{name:'QR Code Pix para pagar todo o pedido'})).toBeVisible();
+ await expect(page.locator('[data-cart-count]')).toHaveText('3');
+ await page.reload();
+ await expect(page.getByRole('heading',{name:'Pix de R$ 28,46',exact:true})).toBeVisible();
+ expect(created).toBe(1);
+ await page.getByRole('button',{name:'Verificar pagamento',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Pagamento confirmado',exact:true})).toHaveCount(0);
+ paid=true;
+ await page.getByRole('button',{name:'Verificar pagamento',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Pagamento confirmado',exact:true})).toBeVisible();
+ await expect(page.locator('[data-cart-count]')).toHaveText('0');
+ await page.goto('/package/'+style.id);await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
+ await expect(page.getByRole('button',{name:'Gerar Pix de R$ 6,00',exact:false})).toBeVisible();
+ await page.reload();await expect(page.locator('[data-cart-count]')).toHaveText('1');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
-test('cadastro, checkout externo Velani e login',async({page})=>{
+test('cadastro, checkout único Velani e login',async({page})=>{
  const email=`test-${Date.now()}-${test.info().project.name}@example.test`;
  await page.goto('/register');await page.getByLabel('Seu nome',{exact:true}).fill('Jogador Teste');await page.getByLabel('E-mail',{exact:true}).fill(email);await page.getByLabel('Senha',{exact:true}).fill('browser-safe-password');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Criar conta'}).click();await expect(page).toHaveURL(/\/account$/);
  await page.goto('/package/ice-permanente-750-robux');await page.getByRole('button',{name:'Comprar agora'}).click();await expect(page).toHaveURL(/checkout/);
- await expect(page.getByRole('heading',{name:'Pagar com a Velani'})).toBeVisible();
- const payment=page.locator('[data-checkout-product="ice-permanente-750-robux"] a');
- await expect(payment).toHaveAttribute('href','https://pagamentosegurocheckout.space/pay/realbux-ice-permanente-750-robux');
- await expect(payment).toContainText('R$ 11,23');
- await expect(payment).toHaveAttribute('target','_blank');
- await expect(page.locator('#checkout-form')).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'Um único pagamento com a Velani'})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Gerar Pix de R$ 11,23',exact:false})).toBeVisible();
+ await expect(page.locator('#checkout-form')).toHaveCount(1);
  await page.goto('/account/orders');await expect(page.locator('.order-card')).toHaveCount(0);
  await page.getByRole('button',{name:'Sair da conta'}).click();await expect(page).toHaveURL(/login/);
  await page.getByLabel('E-mail',{exact:true}).fill(email);await page.getByLabel('Senha',{exact:true}).fill('wrong-password');await page.getByRole('button',{name:'Entrar',exact:false}).click();await expect(page.getByRole('alert')).toContainText('incorretos');

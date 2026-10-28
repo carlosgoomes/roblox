@@ -1,29 +1,33 @@
 # Operação comercial da REALBUX
 
-O vendedor confirmou os 121 produtos, as quantidades e os preços promocionais. Os 121 checkouts foram cadastrados na conta Velani e seus valores foram conferidos com o catálogo, em centavos. Há 120 ativos; Conta Especial + Itens Exclusivos permanece inativo porque seu estoque no site é zero.
+O vendedor confirmou os 121 produtos e possui o estoque. Os 32 itens que custavam menos de R$ 5,00 passaram a R$ 6,00 no site e na Velani. Os demais preços foram preservados. Há 120 produtos disponíveis e um sem estoque.
 
-## Pagamento
+## Pagamento único do carrinho
 
-public/velani-checkouts.js associa cada ID de produto ao link criado na Velani, ao preço conferido e ao estado de ativação. O catálogo só oferece o link se o produto tiver estoque, o checkout estiver ativo e seu preço corresponder ao preço promocional do site. Alterações de preço na Velani e no catálogo devem ser sincronizadas antes de publicar.
+O cliente entra na conta, confere produtos, quantidades e e-mail, aceita os termos e gera um único Pix pela API Velani. O servidor ignora preços enviados pelo navegador, consulta o catálogo, valida estoque e soma valores inteiros em centavos. O total deve ficar entre R$ 5,00 e R$ 3.000,00, conforme o contrato da Velani.
 
-Cada link cobra uma unidade de um produto. O checkout do site explica que várias unidades ou produtos exigem pagamentos separados e mostra o valor unitário junto de cada botão. O total do carrinho não é enviado a um link individual. Os links abrem em uma nova aba; o carrinho permanece salvo e a navegação não é tratada como confirmação de pagamento.
+A chave VELANI_SECRET_KEY fica apenas no servidor da Vercel. O token temporário do painel não é usado pelo site. O Pix é mostrado com QR Code local e copia e cola; imagens externas de QR Code não são carregadas.
 
-Pix está habilitado. Cartão e boleto não foram ativados. Por solicitação do vendedor, os 32 produtos que custavam menos de R$ 5,00 passaram a R$ 6,00 no site e na Velani. Os demais preços foram preservados. Não há produtos abaixo de R$ 5,00. Os selos desses 32 produtos exibem o desconto efetivo e o banner anuncia 75% OFF em produtos selecionados.
+Pedidos e referências de pagamento são persistidos no Turso. Requisições repetidas do mesmo carrinho reutilizam o pedido e a chave de idempotência. Uma falha de rede não é tratada como pagamento recusado nem cria automaticamente outra cobrança.
+
+O pagamento só muda para confirmado após consulta autenticada à API Velani, com conferência do ID da transação, referência e valor. O cliente não pode marcar o pedido como pago. A consulta acontece na tela do Pix e pode ser acionada por Verificar pagamento. O carrinho só remove os itens desse pedido após confirmação.
+
+Os 121 links individuais continuam cadastrados na Velani para compatibilidade; compras por esses links não são sincronizadas ao histórico local. O fluxo principal do site usa a API para cobrar o carrinho inteiro.
 
 ## Entrega manual
 
-O vendedor informou que possui os produtos e os enviará manualmente ao e-mail do comprador após a confirmação do pagamento. A condição em public/store-policy.js aparece nos produtos, FAQ, termos e checkout.
+O vendedor envia manualmente todos os itens e quantidades do pedido ao e-mail da conta do comprador após conferir o pagamento no painel da Velani. A mensagem automática dos links individuais não substitui esse envio.
 
-Todos os checkouts exigem nome e e-mail. O campo de entrega da Velani contém uma mensagem informando o envio manual pelo vendedor; não contém credenciais, estoque digital ou um produto fictício. Antes de enviar o produto, o vendedor deve verificar a confirmação no painel Velani e usar o e-mail informado na compra. A mensagem automática da plataforma não substitui o envio do produto.
+O nome, e-mail, lista de itens, quantidades e total são enviados à Velani junto da cobrança. A entrega não exige senha Roblox nos formulários da loja. Não há envio automático de credenciais ou produtos.
 
-## Histórico e persistência
+## Histórico e limites
 
-Cadastro, login e sessões usam Turso na Vercel. Pagamentos externos da Velani ainda não são sincronizados com o histórico local: não há webhook ou consulta autenticada de conciliação implementados. A interface informa ao comprador que acompanhe a confirmação na Velani e a entrega pelo e-mail.
+Pedidos novos aparecem em Minha conta → Meus pedidos. Pagamentos pendentes podem ser retomados pelo botão Ver Pix e verificar pagamento. O estado é atualizado por consulta à API, sem depender de informações enviadas pelo navegador.
 
-POST /api/orders permanece indisponível para criar compras locais sem confirmação de pagamento. Registros antigos com status demo são preservados no banco e omitidos da resposta pública. Nenhum registro foi convertido em compra real ou apagado.
+Não há webhook, reserva global de estoque ou entrega automática. O vendedor deve conferir o painel da Velani antes de entregar, mesmo quando o comprador não estiver mais com o site aberto. Registros antigos de demonstração são preservados no banco e omitidos da resposta pública.
 
 ## Credenciais e validação
 
-O token temporário da Velani é usado apenas para administração neste ambiente. Nenhuma credencial foi incluída no frontend, no Git ou no arquivo de links. Os testes de navegador interceptam o checkout externo e não geram cobranças.
+Configure VELANI_SECRET_KEY como segredo na hospedagem. Não coloque chaves no frontend ou no Git. Testes automatizados simulam a Velani e verificam preços, quantidades, tentativas concorrentes, resposta perdida, confirmação, isolamento entre usuários e manutenção do carrinho.
 
-Um pagamento real de ponta a ponta ainda precisa de validação operacional com a Velani. Sincronização automática de histórico, reserva de estoque e entrega automática de produtos não fazem parte deste fluxo de links individuais.
+Uma cobrança real de verificação pode ser gerada sem pagamento para conferir a integração publicada. Uma cobrança pendente não significa dinheiro recebido.

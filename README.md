@@ -2,7 +2,7 @@
 
 Loja de produtos digitais para o universo Roblox, com catálogo de 121 produtos confirmado pelo usuário, descontos de até 75% OFF, interface responsiva, artes locais, botões neon, fundo animado, contas e carrinho persistente.
 
-Os 121 produtos têm checkouts cadastrados na Velani com os preços promocionais do catálogo. Há 120 ativos e um inativo por falta de estoque. O pagamento é externo, por unidade, e o vendedor entrega manualmente no e-mail informado na compra. Veja [OPERACAO.md](OPERACAO.md).
+Os 121 produtos têm checkouts cadastrados na Velani com os preços promocionais do catálogo. Há 120 ativos e um inativo por falta de estoque. O carrinho gera um único Pix pela API Velani para todos os produtos e quantidades. O vendedor entrega manualmente no e-mail da conta do comprador após confirmar o pagamento. Veja [OPERACAO.md](OPERACAO.md).
 
 ## Executar
 
@@ -27,7 +27,8 @@ Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS
 - Cadastro, login, logout, atualização de nome e senha, cookie HttpOnly e senhas protegidas com scrypt.
 - Histórico com isolamento por usuário e exclusão de registros de teste na resposta pública.
 - Artes temáticas, logotipo e favicon R, banners REALBUX e de promoção, efeitos com suporte a movimento reduzido.
-- Links individuais de pagamento Pix na Velani, com preço por unidade e carrinho preservado ao abrir o checkout externo.
+- Pagamento do carrinho em um único Pix pela API Velani, com valores calculados no servidor, QR Code e copia e cola.
+- Pedido persistente, prevenção de duplicidade, consulta autenticada do pagamento e retomada após recarregar a página.
 
 Rotas: `/`, `/catalog`, `/search?q=...`, `/category/:id`, `/package/:id`, `/faq`, `/terms`, `/privacidade`, `/login`, `/register`, `/checkout`, `/account`, `/account/orders`, `/account/orders/:id`.
 
@@ -52,7 +53,7 @@ npm test
 npm run test:e2e
 ```
 
-Os testes de API usam banco temporário e verificam contas, descrições, preços, links Velani, isolamento do histórico e preservação dos registros antigos. Os testes Playwright cobrem desktop e celular, incluindo pagamentos separados por produto e unidade, abertura do link externo e preservação do carrinho, sem criar cobranças.
+Os testes de API usam banco temporário e verificam contas, descrições, preços, links Velani, isolamento do histórico e preservação dos registros antigos. Os testes Playwright cobrem desktop e celular, incluindo Pix único com produtos e quantidades, retomada após recarregar e limpeza do carrinho somente após confirmação. As APIs do provedor são simuladas nos testes.
 
 Chromium em `/usr/bin/chromium` é detectado automaticamente; outro executável pode ser indicado por `CHROMIUM_PATH`. O servidor dos testes usa a porta 3100 e banco próprio em `/tmp/realm-browser-test.sqlite`.
 

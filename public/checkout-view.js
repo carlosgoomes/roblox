@@ -1,0 +1,21 @@
+import {deliveryDescription} from './store-policy.js';
+
+export function checkoutView({user,items,total,payment,escape,money,icon,breadcrumbs,productImage}){
+  if(!items.length&&!payment)return `<div class="container page">${breadcrumbs('Checkout')}<div class="empty-state">${icon('cart')}<h1>Seu carrinho está vazio</h1><p>Escolha um produto para continuar.</p><a class="btn" href="/catalog">Explorar catálogo</a></div></div>`;
+  const orderItems=payment?.items||items;
+  const orderTotal=payment?.total??total;
+  const summary=`<aside class="panel order-summary"><div class="section-top"><h2>${payment?'Resumo do pedido':'Resumo do carrinho'}</h2>${payment?'':'<button class="text-button" data-action="cart">Editar</button>'}</div>${orderItems.map(p=>`<div class="cart-item" data-checkout-product="${escape(p.id)}">${productImage(p)}<div class="cart-item-copy"><strong>${escape(p.name)}</strong><p class="small subtle">${p.quantity} × ${money(p.price)}</p></div><b>${money(p.price*p.quantity)}</b></div>`).join('')}<div class="summary-lines"><div class="total-row"><strong>Total em um pagamento</strong><strong id="checkout-total">${money(orderTotal)}</strong></div></div></aside>`;
+  let content;
+  if(!user){
+    content=`<h2>Entre para finalizar sua compra</h2><p>Pague todos os produtos em um único Pix. Sua conta guarda o pedido e o e-mail para a entrega.</p><a class="btn full" href="/login?next=checkout">Entrar para pagar</a><p>Ainda não tem conta? <a class="text-button" href="/register?next=checkout">Criar conta</a></p>`;
+  }else if(!payment){
+    content=`<h2>Um único pagamento com a Velani</h2><p>Todos os produtos e quantidades do carrinho serão incluídos no mesmo Pix.</p><p>${deliveryDescription}</p><p class="small">E-mail para entrega: <strong>${escape(user.email)}</strong></p><form id="checkout-form"><label class="checkbox"><input type="checkbox" name="accepted" required><span>Conferi os produtos, os valores e aceito os <a href="/terms">termos de uso</a>.</span></label><p class="form-error" role="alert"></p><button class="btn full" type="submit">Gerar Pix de ${money(orderTotal)} ${icon('arrow')}</button></form><p class="small subtle">Gerar o Pix não debita sua conta. Confira o destinatário e o valor no aplicativo do seu banco antes de pagar.</p>`;
+  }else if(['paid','fulfilled'].includes(payment.status)){
+    content=`<div class="payment-confirmed">${icon('check')}<h2>Pagamento confirmado</h2><p>Recebemos a confirmação do Pix de <strong>${money(orderTotal)}</strong> para todos os itens deste pedido.</p><p>${deliveryDescription}</p><a class="btn full" href="/account/orders/${escape(payment.id)}">Ver meu pedido</a><a class="text-button" href="/catalog">Continuar comprando</a></div>`;
+  }else if(payment.status==='pending_payment'){
+    content=`<h2>Pix de ${money(orderTotal)}</h2><p>Este único Pix paga todos os produtos e quantidades do resumo.</p><p class="status" role="status">Aguardando pagamento</p><img class="pix-qrcode" src="${escape(payment.payment.qrCodeImage)}" width="320" height="320" alt="QR Code Pix para pagar todo o pedido"><label for="pix-code">Pix copia e cola</label><textarea id="pix-code" class="pix-code" readonly rows="3">${escape(payment.payment.pixCode)}</textarea><button class="btn full" data-action="copy-pix">Copiar código Pix</button><p class="small subtle">Válido até ${escape(new Date(payment.payment.expiresAt).toLocaleString('pt-BR'))}. Após pagar, aguarde a confirmação.</p><button class="btn outline full" data-action="refresh-payment">Verificar pagamento</button><p class="form-error payment-status-error" role="alert"></p><p class="small subtle">Pedido #${escape(payment.id.slice(0,8))} · Entrega em ${escape(user.email)}.</p>`;
+  }else{
+    content=`<h2>${payment.status==='refunded'?'Pagamento reembolsado':'Pix encerrado'}</h2><p>Consulte os detalhes na sua conta. Para uma nova compra, confira os itens e gere outro Pix.</p><button class="btn full" data-action="new-payment">Voltar ao carrinho</button><a class="text-button" href="/account/orders/${escape(payment.id)}">Ver pedido</a>`;
+  }
+  return `<div class="container page">${breadcrumbs('Checkout')}<h1>Finalizar compra</h1><p class="subtle">Todos os produtos em um pagamento Pix pela Velani.</p><div class="checkout-grid"><section class="panel unified-checkout">${content}</section>${summary}</div></div>`;
+}

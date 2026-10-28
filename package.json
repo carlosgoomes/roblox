@@ -11,7 +11,7 @@
     "start": "node src/server.js",
     "test": "node --test test/*.test.js",
     "test:e2e": "playwright test",
-    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js",
+    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js && node --check src/payments.js && node --check public/checkout-view.js",
     "assets:sync": "node --use-env-proxy scripts/sync-reference-assets.js",
     "db:check": "node --use-env-proxy scripts/check-account-database.js"
   },
@@ -19,6 +19,7 @@
     "@playwright/test": "1.58.2"
   },
   "dependencies": {
-    "@libsql/client": "^0.18.0"
+    "@libsql/client": "^0.18.0",
+    "qrcode": "1.5.4"
   }
 }

@@ -5,6 +5,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { dirname, resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { products } from '../public/catalog.js';
+import { createPayment, readPayment } from './payments.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const attempts = new Map();
@@ -88,8 +89,9 @@ export async function handler(req,res) {
       }
       if(path==='/api/orders' && req.method==='GET') return send({orders:(await db.prepare("SELECT * FROM orders WHERE user_id=? AND status IN ('pending_payment','paid','fulfilled','cancelled','refunded') ORDER BY created DESC").all(user.id)).map(o=>({...o,items:JSON.parse(o.items),total:o.total/100}))});
       if(path==='/api/orders' && req.method==='POST') {
-        return send({error:'Pagamento indisponível no momento. Seu carrinho foi mantido.',code:'CHECKOUT_UNAVAILABLE'},503);
+        return send({order:await createPayment(db,user,await body(req))});
       }
+      if(path==='/api/payment' && req.method==='POST')return send({order:await readPayment(db,user,(await body(req)).id)});
       fail('Rota não encontrada.',404);
     }
     if(!['GET','HEAD'].includes(req.method)) fail('Método não permitido.',405);

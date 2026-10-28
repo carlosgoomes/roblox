@@ -60,8 +60,8 @@ export const faqs = [
   ['Como protejo minha conta?', 'Use uma senha exclusiva para sua conta REALBUX. Nunca informe aqui a senha da sua conta Roblox.'],
   ['Precisa de ajuda?', 'Consulte as perguntas frequentes para informações sobre o catálogo, sua conta e seus pedidos.'],
   ['Preciso informar minha senha do Roblox?', 'Não. A REALBUX não solicita a senha da sua conta Roblox nesta aplicação.'],
-  ['Onde acompanho meus pedidos?', 'Confira a confirmação do pagamento na Velani e o e-mail informado na compra. O vendedor envia o produto manualmente para esse endereço. Os pagamentos da Velani ainda não aparecem automaticamente no histórico deste site.'],
+  ['Onde acompanho meus pedidos?', 'Os pedidos feitos pelo carrinho aparecem em Minha conta → Meus pedidos. O site consulta a Velani para confirmar o Pix, e o vendedor envia os produtos manualmente ao e-mail da sua conta. Compras por links individuais são acompanhadas pelo e-mail da compra.'],
   ['Posso alterar meu carrinho?', 'Sim. Use os botões + e − para alterar quantidades, ou remova um produto. O carrinho fica salvo neste navegador.'],
-  ['Quais são as formas de pagamento?', 'O pagamento é feito na Velani por Pix. Cada link corresponde a uma unidade de um produto; produtos e unidades adicionais são pagos separadamente. Confira o valor e seu e-mail antes de pagar.'],
+  ['Quais são as formas de pagamento?', 'O pagamento do carrinho é feito por um único Pix processado pela Velani, incluindo todos os produtos e quantidades. Confira o total e o e-mail da sua conta antes de gerar o Pix.'],
   ['O carrinho reserva os produtos?', 'Não. Adicionar um item ao carrinho não confirma uma compra nem garante sua disponibilidade. Confira as condições antes de concluir o pedido.']
 ];

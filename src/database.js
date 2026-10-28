@@ -6,7 +6,8 @@ import { databaseConfiguration, databaseConfigurationError } from './database-co
 const schema = [
   'CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL)',
   'CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), expires INTEGER)',
-  'CREATE TABLE IF NOT EXISTS orders(id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created TEXT, total INTEGER, items TEXT, username TEXT, status TEXT)'
+  'CREATE TABLE IF NOT EXISTS orders(id TEXT PRIMARY KEY, user_id TEXT REFERENCES users(id), created TEXT, total INTEGER, items TEXT, username TEXT, status TEXT)',
+  'CREATE TABLE IF NOT EXISTS checkout_payments(order_id TEXT PRIMARY KEY REFERENCES orders(id), cart_key TEXT UNIQUE, transaction_id TEXT UNIQUE, pix_code TEXT, expires TEXT)'
 ];
 let pending;
 async function connect() {
