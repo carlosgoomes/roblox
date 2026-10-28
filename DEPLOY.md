@@ -7,7 +7,7 @@ O projeto já contém `vercel.json`, a função `api/index.js`, o cliente de ban
 1. Uma conta Vercel autenticada. A CLI pode criar o projeto durante o primeiro deploy; não é necessário criá-lo previamente.
 2. Um banco **Turso/libSQL persistente**, com URL `libsql://...` ou `https://...` e token de acesso de leitura/escrita.
 
-O SQLite local não deve ser enviado para a Vercel: o sistema de arquivos das funções não fornece persistência compartilhada entre instâncias. Nesta versão, cadastro e login exigem banco remoto configurado. A criação de compras permanece indisponível até integrar pagamento e entrega, independentemente do banco. O catálogo e a navegação permanecem acessíveis. Nunca utilize `/tmp` como substituto de um banco persistente.
+O SQLite local não deve ser enviado para a Vercel: o sistema de arquivos das funções não fornece persistência compartilhada entre instâncias. Nesta versão, cadastro e login exigem banco remoto configurado. Os links externos Velani funcionam sem credenciais de pagamento no site; o histórico local ainda não sincroniza essas compras. O catálogo e a navegação permanecem acessíveis. Nunca utilize `/tmp` como substituto de um banco persistente.
 
 ## Configurar e publicar
 
@@ -44,7 +44,7 @@ As tabelas são criadas automaticamente na primeira operação autenticada. O ba
 
 - Abra a URL fornecida pela Vercel e acesse diretamente `/faq` e uma página `/package/...`; a atualização do navegador deve manter essas páginas funcionais.
 - Confira `/api/catalog` (121 produtos) e `/api/me` (`user: null` sem sessão).
-- Crie uma conta de teste e verifique login e histórico. Confirme que o checkout mostra Pagamento indisponível e que POST /api/orders não cria compras antes da integração real.
+- Crie uma conta de teste e verifique login e histórico. Confirme os links de checkout Velani, os preços por unidade e a indicação de entrega manual. POST /api/orders não deve criar pedidos sem confirmação real de pagamento.
 - Confirme que o cookie `realm_session` inclui HttpOnly, SameSite=Lax e Secure.
 - Verifique novamente a conta após uma nova implantação para confirmar a persistência remota.
 
@@ -56,4 +56,4 @@ As tabelas são criadas automaticamente na primeira operação autenticada. O ba
 
 O build e o handler serverless podem ser testados sem conta Vercel. A conexão com Turso, a publicação e a URL pública só podem ser confirmadas após o provisionamento do banco, a autenticação e o acesso de rede necessários. Uma prévia sem banco não representa a loja completa em funcionamento.
 
-O checkout está indisponível. Hospedar na Vercel não integra pagamento ou entrega. Consulte OPERACAO.md para ativar as vendas.
+Os links externos da Velani são definidos em public/velani-checkouts.js. Credenciais temporárias da conta Velani são usadas apenas na configuração administrativa e nunca devem ser publicadas. Consulte OPERACAO.md para os limites do fluxo de pagamento e a entrega manual.

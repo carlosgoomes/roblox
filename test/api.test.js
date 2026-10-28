@@ -21,7 +21,7 @@ async function request(path,data,withCookie=true,origin) {
  const response=await fetch(base+'/api/'+path,{method:data===undefined?'GET':'POST',headers:{...(data===undefined?{}:{'Content-Type':'application/json'}),...(withCookie&&cookie?{Cookie:cookie}:{}),...(origin?{Origin:origin}:{})},body:data===undefined?undefined:JSON.stringify(data)});
  const value=await response.json();return {status:response.status,value,cookie:response.headers.get('set-cookie')?.split(';')[0]};
 }
-test('conta, sessão, catálogo, checkout indisponível e isolamento dos pedidos',async()=>{
+test('conta, sessão, catálogo com links Velani e isolamento dos pedidos',async()=>{
  assert.equal((await request('me')).value.user,null);
  assert.equal((await request('orders',{items:[],accepted:true,username:'Player'})).status,401);
  assert.equal((await request('register',{name:'Player',email:'bad',password:'123'})).status,400);
@@ -29,7 +29,8 @@ test('conta, sessão, catálogo, checkout indisponível e isolamento dos pedidos
  assert.equal(registration.status,200);assert.ok(registration.cookie);cookie=registration.cookie;
  assert.equal((await request('me')).value.user.name,'Jogador Teste');
  assert.equal((await request('register',{name:'Outro',email:'player@example.test',password:'safe-test-password'})).status,409);
- const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);const sale=products.find(item=>item.discountPercent===75&&item.id!==p.id&&item.id!==last.id);assert.equal(products.length,121);assert.ok(sale);for(const item of products){assert.match(item.description,/Após a confirmação do pagamento, o produto será entregue imediatamente no e-mail cadastrado/);assert.equal(item.discountPercent,75);assert.equal(Math.round(item.price*100),Math.round(Math.round(item.oldPrice*100)*.25));}
+ const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);const sale=products.find(item=>item.discountPercent===75&&item.id!==p.id&&item.id!==last.id);assert.equal(products.length,121);assert.ok(sale);for(const item of products){assert.match(item.description,/produto será enviado manualmente pelo vendedor ao e-mail informado na compra/);assert.equal(item.discountPercent,75);assert.equal(Math.round(item.price*100),Math.round(Math.round(item.oldPrice*100)*.25));if(item.stock){const checkout=new URL(item.checkoutUrl);assert.equal(checkout.origin,'https://pagamentosegurocheckout.space');assert.match(checkout.pathname,/^\/pay\/realbux-[a-z0-9-]+$/);assert.equal(checkout.search,'');}else assert.equal(item.checkoutUrl,null);}
+ assert.equal(new Set(products.filter(p=>p.stock).map(p=>p.checkoutUrl)).size,120);
  const checkout=await request('orders',{items:[{id:p.id,quantity:1,price:0.01}],username:'Player_123',accepted:true});
  assert.equal(checkout.status,503);assert.equal(checkout.value.code,'CHECKOUT_UNAVAILABLE');
  assert.equal((await request('orders')).value.orders.length,0);

@@ -1,23 +1,29 @@
 # Operação comercial da REALBUX
 
-O usuário confirmou os 121 produtos, as quantidades e os preços com 75% OFF. A interface não contém avisos de demonstração, avaliações copiadas ou contadores de clientes não comprovados.
+O vendedor confirmou os 121 produtos, as quantidades e os preços com 75% OFF. Os 121 checkouts foram cadastrados na conta Velani e seus valores foram conferidos com o catálogo, em centavos. Há 120 ativos; Conta Especial + Itens Exclusivos permanece inativo porque seu estoque no site é zero.
 
-A condição de entrega fornecida pelo usuário está em `public/store-policy.js`: entrega imediata no e-mail cadastrado após a confirmação do pagamento. Ela aparece na descrição dos 121 produtos, nas abas de informações, no FAQ e nos termos. O texto é a condição comercial; o envio automático ainda não foi implementado.
+## Pagamento
 
-## Estado atual
+public/velani-checkouts.js associa cada ID de produto ao link criado na Velani, ao preço conferido e ao estado de ativação. O catálogo só oferece o link se o produto tiver estoque, o checkout estiver ativo e seu preço corresponder ao preço promocional do site. Alterações de preço na Velani e no catálogo devem ser sincronizadas antes de publicar.
 
-Catálogo, carrinho, cadastro e login funcionam no código. O provedor de pagamento ainda não foi definido. Não há credenciais de pagamento ou envio de e-mails configuradas neste ambiente.
+Cada link cobra uma unidade de um produto. O checkout do site explica que várias unidades ou produtos exigem pagamentos separados e mostra o valor unitário junto de cada botão. O total do carrinho não é enviado a um link individual. Os links abrem em uma nova aba; o carrinho permanece salvo e a navegação não é tratada como confirmação de pagamento.
 
-O checkout mostra “Pagamento indisponível no momento”. Para uma sessão autenticada, `POST /api/orders` retorna HTTP 503 com `CHECKOUT_UNAVAILABLE`, sem criar pedido ou cobrança fictícia. Não existe uma variável que transforme registros de teste em pagamentos reais.
+Pix está habilitado. Cartão e boleto não foram ativados. A API pública da Velani informa mínimo de R$ 5,00 para transações via gateway; 32 produtos custam menos. O cadastro desses preços foi aceito, mas não foi criada cobrança real para confirmar se o limite também se aplica aos checkouts. Essa regra precisa ser confirmada com a Velani antes de anunciar vendas desses itens. Nenhum preço foi aumentado.
 
-Registros antigos com status `demo` são preservados no banco, mas não são retornados no histórico público. Nenhum registro foi convertido em compra real ou apagado. Pedidos reais usam estados `pending_payment`, `paid`, `fulfilled`, `cancelled` e `refunded`; a integração que produz essas transições ainda não está pronta.
+## Entrega manual
 
-## Ativação das vendas
+O vendedor informou que possui os produtos e os enviará manualmente ao e-mail do comprador após a confirmação do pagamento. A condição em public/store-policy.js aparece nos produtos, FAQ, termos e checkout.
 
-Após escolher o provedor, integrar cobrança e confirmação por webhook verificado, com preços e estoque validados no servidor. Configurar banco persistente e serviço de e-mail para entregar o conteúdo ou as instruções somente após confirmar o pagamento, com prevenção de duplicidade, tratamento de falhas e registro da entrega.
+Todos os checkouts exigem nome e e-mail. O campo de entrega da Velani contém uma mensagem informando o envio manual pelo vendedor; não contém credenciais, estoque digital ou um produto fictício. Antes de enviar o produto, o vendedor deve verificar a confirmação no painel Velani e usar o e-mail informado na compra. A mensagem automática da plataforma não substitui o envio do produto.
 
-O responsável deve completar a identificação comercial e o canal de atendimento e revisar os termos e a política de privacidade antes de abrir as vendas. Credenciais devem ser inseridas nas configurações seguras da hospedagem, nunca no código ou no chat. Não basta remover o aviso de indisponibilidade para ativar as compras.
+## Histórico e persistência
 
-## Compatibilidade
+Cadastro, login e sessões usam Turso na Vercel. Pagamentos externos da Velani ainda não são sincronizados com o histórico local: não há webhook ou consulta autenticada de conciliação implementados. A interface informa ao comprador que acompanhe a confirmação na Velani e a entrega pelo e-mail.
 
-Os slugs novos não usam `demo-`. Links antigos são normalizados e itens do carrinho existente são migrados para os IDs correspondentes. Os registros históricos permanecem intactos.
+POST /api/orders permanece indisponível para criar compras locais sem confirmação de pagamento. Registros antigos com status demo são preservados no banco e omitidos da resposta pública. Nenhum registro foi convertido em compra real ou apagado.
+
+## Credenciais e validação
+
+O token temporário da Velani é usado apenas para administração neste ambiente. Nenhuma credencial foi incluída no frontend, no Git ou no arquivo de links. Os testes de navegador interceptam o checkout externo e não geram cobranças.
+
+O mínimo de cobrança e um pagamento real de ponta a ponta ainda precisam de validação operacional com a Velani. Sincronização automática de histórico, reserva de estoque e entrega automática de produtos não fazem parte deste fluxo de links individuais.

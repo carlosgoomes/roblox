@@ -2,7 +2,7 @@
 
 Loja de produtos digitais para o universo Roblox, com catálogo de 121 produtos confirmado pelo usuário, promoção de 75% OFF, interface responsiva, artes locais, botões neon, fundo animado, contas e carrinho persistente.
 
-**As vendas ainda não estão ativadas.** O provedor de pagamento não foi definido e o envio automático de e-mails ainda não está integrado. O checkout mostra “Pagamento indisponível no momento” e não cria compras fictícias. Veja [OPERACAO.md](OPERACAO.md).
+Os 121 produtos têm checkouts cadastrados na Velani com os preços promocionais do catálogo. Há 120 ativos e um inativo por falta de estoque. O pagamento é externo, por unidade, e o vendedor entrega manualmente no e-mail informado na compra. Veja [OPERACAO.md](OPERACAO.md).
 
 ## Executar
 
@@ -21,13 +21,13 @@ Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS
 ## Funcionalidades
 
 - Início, categorias, catálogo, busca, filtros, ordenação, páginas de produto, FAQ, termos e privacidade.
-- Descrição de entrega imediata no e-mail cadastrado após confirmação do pagamento, conforme a condição comercial fornecida pelo usuário.
+- Descrição de entrega manual pelo vendedor no e-mail informado na compra, após confirmação do pagamento.
 - 75% OFF nos 121 produtos, calculados a partir do preço original, com arredondamento em centavos.
 - Carrinho persistente com adição, quantidades e remoção.
 - Cadastro, login, logout, atualização de nome e senha, cookie HttpOnly e senhas protegidas com scrypt.
 - Histórico com isolamento por usuário e exclusão de registros de teste na resposta pública.
 - Artes temáticas, logotipo e favicon R, banners REALBUX e de promoção, efeitos com suporte a movimento reduzido.
-- Finalização indisponível até integrar os serviços de operação comercial.
+- Links individuais de pagamento Pix na Velani, com preço por unidade e carrinho preservado ao abrir o checkout externo.
 
 Rotas: `/`, `/catalog`, `/search?q=...`, `/category/:id`, `/package/:id`, `/faq`, `/terms`, `/privacidade`, `/login`, `/register`, `/checkout`, `/account`, `/account/orders`, `/account/orders/:id`.
 
@@ -37,6 +37,7 @@ Rotas: `/`, `/catalog`, `/search?q=...`, `/category/:id`, `/package/:id`, `/faq`
 | --- | --- |
 | `public/catalog.js` | Produtos, categorias e FAQ |
 | `public/store-policy.js` | Condição de entrega por e-mail |
+| `public/velani-checkouts.js` | Links, preços conferidos e situação dos 121 checkouts |
 | `public/promotion.js` | Promoção de 75% |
 | `public/app.js` | Páginas e navegação |
 | `public/product-artwork.js` | Associação das artes aos produtos |
@@ -51,7 +52,7 @@ npm test
 npm run test:e2e
 ```
 
-Os testes de API usam banco temporário e verificam contas, descrições, preços, isolamento do histórico, preservação dos registros antigos e bloqueio da finalização. Os testes Playwright cobrem desktop e celular, incluindo catálogo, imagens, carrinho, cadastro e pagamento indisponível.
+Os testes de API usam banco temporário e verificam contas, descrições, preços, links Velani, isolamento do histórico e preservação dos registros antigos. Os testes Playwright cobrem desktop e celular, incluindo pagamentos separados por produto e unidade, abertura do link externo e preservação do carrinho, sem criar cobranças.
 
 Chromium em `/usr/bin/chromium` é detectado automaticamente; outro executável pode ser indicado por `CHROMIUM_PATH`. O servidor dos testes usa a porta 3100 e banco próprio em `/tmp/realm-browser-test.sqlite`.
 

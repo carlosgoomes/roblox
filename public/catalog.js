@@ -1,6 +1,7 @@
 import { deliveryDescription } from './store-policy.js';
 import { applyPromotion } from './promotion.js';
 import { referenceImage } from './reference-assets.js';
+import { velaniCheckouts } from './velani-checkouts.js';
 
 export const categories = [
   { id: 'bloxfruits', name: 'Blox Fruits', label: 'CONTAS & ITENS', color: '#ad38f4', art: 'fruits', groups: ['Mês das Crianças', 'Magnetic Fruit + Update', 'Produtos populares', 'Promoção relâmpago', 'Caixas raras', 'Gamepasses', 'Contas PVP', 'Raças V4', 'Especiais', 'Frutas no inventário'] },
@@ -32,7 +33,7 @@ const items = [
   ['jujutsu-gamepass','Gamepass — Jujutsu Shenanigans','jujutsu-shenanigans',24.90,'jujutsu','Gamepasses','◈']
 ];
 const baseProducts = items.map(([id,name,category,price,art,group,symbol],i) => ({ id,name,category,price,art,group,symbol,stock: i === 18 ? 0 : 50, popular: i < 8, oldPrice: Math.round(price * 1.3 * 100) / 100, image: referenceImage(`product:${id}`, `/assets/${art}.svg`), fallbackImage: `/assets/${art}.svg`, description: 'Produto digital para o universo Roblox. Confira as informações e o prazo de entrega antes de comprar.' }));
-// Merchant confirmed products, quantities and prices on 2026-10-27. Checkout still awaits payment integration; see OPERACAO.md.
+// Merchant confirmed products, quantities and promotional prices. Velani links use these final prices.
 const fruits = ['Rocket','Spin','Chop','Spring','Bomb','Smoke','Spike','Flame','Falcon','Sand','Dark','Diamond','Light','Rubber','Barrier','Ghost','Magma','Quake','Buddha','Love','Spider','Phoenix','Portal','Rumble'];
 const generated=[];
 function addProduct(id,name,category,group,art,label,price) {
@@ -47,7 +48,11 @@ fruits.forEach((fruit,i)=>addProduct(`permanent-${fruit.toLowerCase()}`,`${fruit
 [2010,2011,2012,2013,2014,2015,2016,2017].forEach((year,i)=>addProduct(`account-${year}`,`Conta Roblox de ${year}`,'contas-antigas-raras','Contas raras','rare',`Conta ${year}`,59.9-i*5));
 [['Gamepasses','Early Access'],['Gamepasses','VIP'],['Gamepasses','Emote Slots'],['Caixas raras','5X Chromatic Box'],['Caixas raras','10X Chromatic Box'],['Caixas raras','Pacote de Caixas Especiais']].forEach(([group,name],i)=>addProduct(`jujutsu-${i}`,`${name} — Jujutsu Shenanigans`,'jujutsu-shenanigans',group,'jujutsu',name,9.9+i*8));
 [['Mês das Crianças','Conta Especial — Pacote A','rare'],['Mês das Crianças','Conta Especial — Pacote B','rare'],['Promoção relâmpago','Conta Level Máximo + Magma','fruits'],['Caixas raras','Caixa de Contas Épicas','rare'],['Especiais','Conta Colecionador — Pacote Especial','sword']].forEach(([group,name,art],i)=>addProduct(`special-${i}`,name,'bloxfruits',group,art,name,8.9+i*9));
-export const products=[...baseProducts,...generated].map(product=>({...applyPromotion(product),description:`${product.description} ${deliveryDescription}`}));
+export const products=[...baseProducts,...generated].map(product=>{
+  const promoted=applyPromotion(product),checkout=velaniCheckouts[product.id];
+  const available=product.stock>0&&checkout?.active&&checkout.priceCents===Math.round(promoted.price*100);
+  return {...promoted,description:`${product.description} ${deliveryDescription}`,checkoutUrl:available?checkout.url:null};
+});
 if(products.length!==121)throw new Error('O catálogo deve conter 121 produtos.');
 
 export const faqs = [
@@ -55,8 +60,8 @@ export const faqs = [
   ['Como protejo minha conta?', 'Use uma senha exclusiva para sua conta REALBUX. Nunca informe aqui a senha da sua conta Roblox.'],
   ['Precisa de ajuda?', 'Consulte as perguntas frequentes para informações sobre o catálogo, sua conta e seus pedidos.'],
   ['Preciso informar minha senha do Roblox?', 'Não. A REALBUX não solicita a senha da sua conta Roblox nesta aplicação.'],
-  ['Onde acompanho meus pedidos?', 'Entre na sua conta e abra Meus pedidos para consultar as compras registradas.'],
+  ['Onde acompanho meus pedidos?', 'Confira a confirmação do pagamento na Velani e o e-mail informado na compra. O vendedor envia o produto manualmente para esse endereço. Os pagamentos da Velani ainda não aparecem automaticamente no histórico deste site.'],
   ['Posso alterar meu carrinho?', 'Sim. Use os botões + e − para alterar quantidades, ou remova um produto. O carrinho fica salvo neste navegador.'],
-  ['Quais são as formas de pagamento?', 'As opções de pagamento são apresentadas no checkout quando o serviço está disponível. No momento, a finalização de compras está indisponível.'],
+  ['Quais são as formas de pagamento?', 'O pagamento é feito na Velani por Pix. Cada link corresponde a uma unidade de um produto; produtos e unidades adicionais são pagos separadamente. Confira o valor e seu e-mail antes de pagar.'],
   ['O carrinho reserva os produtos?', 'Não. Adicionar um item ao carrinho não confirma uma compra nem garante sua disponibilidade. Confira as condições antes de concluir o pedido.']
 ];

@@ -65,7 +65,7 @@ test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  await page.getByRole('dialog').getByRole('link',{name:'Todos os produtos'}).click();await expect(page).toHaveURL(/catalog/);
  await page.getByRole('textbox',{name:'Buscar nesta seleção'}).fill('ice');await expect(page.locator('#results .product-card')).toHaveCount(1);
  await page.locator('#results a').first().click();await expect(page.getByRole('heading',{name:'Ice Permanente [750 Robux]',exact:true})).toBeVisible();
- await page.getByRole('tab',{name:'Entrega',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Informações de entrega');await expect(page.getByRole('tabpanel')).toContainText('será entregue imediatamente no e-mail cadastrado');
+ await page.getByRole('tab',{name:'Entrega',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('Informações de entrega');await expect(page.getByRole('tabpanel')).toContainText('será enviado manualmente pelo vendedor ao e-mail informado na compra');
  await page.getByRole('tab',{name:'Avaliações',exact:true}).click();await expect(page.getByRole('tabpanel')).toContainText('ainda não recebeu');
  await page.getByRole('button',{name:'Adicionar ao carrinho',exact:true}).click();await expect(page.getByRole('dialog')).toContainText('Ice Permanente');
  await page.getByRole('button',{name:'Aumentar quantidade'}).click();await expect(page.getByRole('dialog').locator('.quantity-controls>span')).toHaveText('2');
@@ -76,12 +76,36 @@ test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  for(const path of ['/terms','/privacidade','/category/blue-lock','/category/jujutsu-shenanigans','/category/gamepass-blox-fruits','/category/contas-antigas-raras','/missing']){await page.goto(path);await expect(page.locator('main')).not.toBeEmpty();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();}
  expect(errors).toEqual([]);
 });
-test('cadastro, checkout indisponível e login',async({page})=>{
+test('produtos e quantidades têm pagamentos unitários separados com o valor correto',async({page,context})=>{
+ await page.goto('/package/ice-permanente-750-robux');
+ await page.getByLabel('Quantidade',{exact:true}).fill('2');
+ await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
+ await page.goto('/package/blue-lock-style-slot');
+ await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
+ await expect(page.locator('.checkout-payment')).toHaveCount(2);
+ await expect(page.locator('.checkout-payments')).toContainText('2 unidades no carrinho');
+ await expect(page.locator('.checkout-grid>section')).toContainText('1 unidade de um produto');
+ const first=page.locator('[data-checkout-product="ice-permanente-750-robux"] a');
+ const second=page.locator('[data-checkout-product="blue-lock-style-slot"] a');
+ await expect(first).toContainText('R$ 11,23');
+ await expect(second).toContainText('R$ 2,48');
+ await expect(second).toHaveAttribute('href','https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot');
+ await context.route('https://pagamentosegurocheckout.space/**',route=>route.fulfill({contentType:'text/html',body:'<h1>Checkout externo interceptado pelo teste</h1>'}));
+ const popupPromise=page.waitForEvent('popup');await second.click();const popup=await popupPromise;
+ await expect(popup).toHaveURL('https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot');
+ await popup.close();
+ await page.reload();await expect(page.locator('.checkout-payment')).toHaveCount(2);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+test('cadastro, checkout externo Velani e login',async({page})=>{
  const email=`test-${Date.now()}-${test.info().project.name}@example.test`;
  await page.goto('/register');await page.getByLabel('Seu nome',{exact:true}).fill('Jogador Teste');await page.getByLabel('E-mail',{exact:true}).fill(email);await page.getByLabel('Senha',{exact:true}).fill('browser-safe-password');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Criar conta'}).click();await expect(page).toHaveURL(/\/account$/);
  await page.goto('/package/ice-permanente-750-robux');await page.getByRole('button',{name:'Comprar agora'}).click();await expect(page).toHaveURL(/checkout/);
- await expect(page.getByRole('heading',{name:'Pagamento indisponível no momento'})).toBeVisible();
- await expect(page.getByRole('button',{name:'Pagamento indisponível',exact:true})).toBeDisabled();
+ await expect(page.getByRole('heading',{name:'Pagar com a Velani'})).toBeVisible();
+ const payment=page.locator('[data-checkout-product="ice-permanente-750-robux"] a');
+ await expect(payment).toHaveAttribute('href','https://pagamentosegurocheckout.space/pay/realbux-ice-permanente-750-robux');
+ await expect(payment).toContainText('R$ 11,23');
+ await expect(payment).toHaveAttribute('target','_blank');
  await expect(page.locator('#checkout-form')).toHaveCount(0);
  await page.goto('/account/orders');await expect(page.locator('.order-card')).toHaveCount(0);
  await page.getByRole('button',{name:'Sair da conta'}).click();await expect(page).toHaveURL(/login/);
