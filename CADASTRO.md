@@ -25,6 +25,14 @@ Em um terminal que já tenha as duas variáveis configuradas de forma segura, ex
 
 ## Estado deste ambiente
 
-O usuário informou que ainda não criou o banco. Este ambiente não contém as duas variáveis nem autenticação Vercel/Turso disponível para provisionar o serviço. O cadastro pode ser testado localmente, mas a ativação na implantação depende de criar e conectar o banco e fazer redeploy. Não foi confirmada uma conexão remota.
+O usuário informou que o banco e as duas variáveis já foram configurados na Vercel. Essa configuração não é transferida automaticamente a este ambiente, que ainda não dispõe de autenticação Vercel ou conexão direta com o banco. O cadastro pode ser testado localmente, mas a ativação na implantação depende de criar e conectar o banco e fazer redeploy. Não foi confirmada uma conexão remota.
 
 Configurar o banco libera a persistência de cadastro e login; não ativa pagamento ou envio de produtos por e-mail.
+
+## Diagnóstico da configuração
+
+Também são reconhecidos os pares LIBSQL_URL + LIBSQL_AUTH_TOKEN e LIBSQL_DATABASE_URL + LIBSQL_AUTH_TOKEN. Valores com espaços externos ou aspas pareadas são normalizados. Um par incompleto nunca é misturado a um token de outro par.
+
+A resposta de erro da API e os logs retornam somente códigos sem credenciais: missing_database_url, missing_auth_token, invalid_database_url ou connection_failed. Estes distinguem ambiente sem variáveis, configuração parcial, formato incorreto e falha de conexão/autenticação.
+
+O endereço público identificado no GitHub é https://roblox-one-livid.vercel.app. O acesso à API de gerenciamento Vercel requer autenticação separada do acesso GitHub. Neste ambiente, o login Vercel e as variáveis de banco ainda não estavam disponíveis na última verificação.

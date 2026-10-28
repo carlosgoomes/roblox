@@ -5,6 +5,9 @@ import http from 'node:http';
 process.env.VERCEL = '1';
 delete process.env.TURSO_DATABASE_URL;
 delete process.env.TURSO_AUTH_TOKEN;
+delete process.env.LIBSQL_URL;
+delete process.env.LIBSQL_DATABASE_URL;
+delete process.env.LIBSQL_AUTH_TOKEN;
 const { default: handler } = await import('../api/index.js');
 const server = http.createServer(handler);
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -28,6 +31,7 @@ test('sem banco persistente, cadastro falha explicitamente em vez de perder dado
   assert.equal(response.status, 503);
   const value=await response.json();
   assert.equal(value.code,'ACCOUNT_DATABASE_NOT_CONFIGURED');
+  assert.equal(value.reason,'missing_database_url');
   assert.match(value.error,/serviço de contas está temporariamente indisponível/);
   assert.doesNotMatch(value.error,/TURSO_|token|Vercel/);
   const cookieRequest = await fetch(base + 'me', { headers: { Cookie: 'realm_session=test' } });
