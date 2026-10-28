@@ -26,7 +26,10 @@ test('sem banco persistente, cadastro falha explicitamente em vez de perder dado
     body: JSON.stringify({ name: 'Teste Vercel', email: 'vercel@example.test', password: 'test-safe-password' })
   });
   assert.equal(response.status, 503);
-  assert.match((await response.json()).error, /Banco persistente não configurado/);
+  const value=await response.json();
+  assert.equal(value.code,'ACCOUNT_DATABASE_NOT_CONFIGURED');
+  assert.match(value.error,/serviço de contas está temporariamente indisponível/);
+  assert.doesNotMatch(value.error,/TURSO_|token|Vercel/);
   const cookieRequest = await fetch(base + 'me', { headers: { Cookie: 'realm_session=test' } });
   assert.equal(cookieRequest.status, 503);
 });

@@ -16,7 +16,7 @@ npm run dev
 
 O servidor usa a porta 3000. `npm start` executa sem watch; `npm run build` verifica a sintaxe. O banco local é criado em `data/store.sqlite` quando uma operação de conta precisa dele. Preserve esse diretório.
 
-Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS. Na Vercel, a persistência exige `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`; veja [DEPLOY.md](DEPLOY.md). Não coloque credenciais em arquivos versionados.
+Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS. Na Vercel, a persistência exige `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`; veja [CADASTRO.md](CADASTRO.md) para criar o banco e liberar contas, e [DEPLOY.md](DEPLOY.md) para a implantação. Não coloque credenciais em arquivos versionados.
 
 ## Funcionalidades
 

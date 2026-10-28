@@ -97,7 +97,11 @@ export async function handler(req,res) {
     if(!file.startsWith(root+sep) && file!==root) fail('Acesso negado.',403);
     try {if(!statSync(file).isFile()) file=resolve(root,'index.html');} catch {if(extname(path)) fail('Arquivo não encontrado.',404); file=resolve(root,'index.html');}
     const content=readFileSync(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:content);
-  } catch(e) {if(!e.status) console.error(e);send({error:e.status?e.message:'Não foi possível concluir. Tente novamente.'},e.status||500);}
+  } catch(e) {
+    if(e.code==='ACCOUNT_DATABASE_NOT_CONFIGURED')console.error('[ACCOUNT_DATABASE_NOT_CONFIGURED] Defina TURSO_DATABASE_URL e TURSO_AUTH_TOKEN no projeto da Vercel.');
+    else if(!e.status)console.error(e);
+    send({error:e.publicMessage||(e.status?e.message:'Não foi possível concluir. Tente novamente.'),...(e.code?{code:e.code}:{})},e.status||500);
+  }
 }
 export const server=http.createServer(handler);
 if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) server.listen(Number(process.env.PORT||3000),process.env.HOST||'0.0.0.0',()=>console.log(`REALBUX em execução na porta ${process.env.PORT||3000}`));

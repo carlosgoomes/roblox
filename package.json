@@ -12,7 +12,8 @@
     "test": "node --test test/*.test.js",
     "test:e2e": "playwright test",
     "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js",
-    "assets:sync": "node --use-env-proxy scripts/sync-reference-assets.js"
+    "assets:sync": "node --use-env-proxy scripts/sync-reference-assets.js",
+    "db:check": "node --use-env-proxy scripts/check-account-database.js"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2"
