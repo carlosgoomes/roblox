@@ -11,7 +11,7 @@
     "start": "node src/server.js",
     "test": "node --test test/*.test.js",
     "test:e2e": "playwright test",
-    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js",
+    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js",
     "assets:sync": "node --use-env-proxy scripts/sync-reference-assets.js"
   },
   "devDependencies": {

@@ -1,0 +1,51 @@
+/* Decorative motion stays behind the store; interactions remain normal HTML controls. */
+body{isolation:isolate;background-color:#100918}
+#app{position:relative;z-index:1}
+.ambient-scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict}
+.ambient-aurora{position:absolute;width:85vw;height:85vh;border-radius:50%;background:radial-gradient(ellipse,#b320f338 0%,#821aff1c 34%,transparent 68%);will-change:transform;animation:aurora-drift 24s ease-in-out infinite alternate}
+.ambient-aurora.one{left:-24vw;top:-22vh}
+.ambient-aurora.two{right:-28vw;top:10vh;background:radial-gradient(ellipse,#4369ff30 0%,#a824d01c 35%,transparent 68%);animation-name:aurora-sweep;animation-duration:29s;animation-delay:-12s}
+.ambient-aurora.three{left:10vw;bottom:-40vh;background:radial-gradient(ellipse,#ed2ab92b 0%,#9d30e716 38%,transparent 68%);animation-duration:32s;animation-delay:-18s}
+.ambient-grid{position:absolute;left:-50%;right:-50%;height:140%;top:12%;background-image:linear-gradient(#c75cff12 1px,transparent 1px),linear-gradient(90deg,#c75cff12 1px,transparent 1px);background-size:72px 72px;transform-origin:50% 50%;mask-image:linear-gradient(transparent,#0008 25%,#000b 75%,transparent);animation:grid-flow 20s linear infinite;opacity:.65}
+.ambient-stars{position:absolute;inset:0}
+.ambient-stars i{position:absolute;display:block;width:4px;height:4px;background:#dfa5ff;border-radius:1px;box-shadow:0 0 9px #ce56ff,0 0 18px #9e3dff66;animation:spark-float 14s ease-in-out infinite;opacity:.35}
+.ambient-stars i:nth-child(1){left:5%;top:19%;animation-delay:-3s}.ambient-stars i:nth-child(2){left:13%;top:77%;animation-delay:-9s;width:3px;height:3px}.ambient-stars i:nth-child(3){left:25%;top:37%;animation-delay:-5s}.ambient-stars i:nth-child(4){left:36%;top:88%;animation-delay:-11s;width:3px;height:3px}.ambient-stars i:nth-child(5){left:45%;top:12%;animation-delay:-7s}.ambient-stars i:nth-child(6){left:53%;top:67%;animation-delay:-2s;width:2px;height:2px}.ambient-stars i:nth-child(7){left:65%;top:32%;animation-delay:-10s}.ambient-stars i:nth-child(8){left:76%;top:83%;animation-delay:-6s;width:3px;height:3px}.ambient-stars i:nth-child(9){left:86%;top:18%;animation-delay:-12s}.ambient-stars i:nth-child(10){left:94%;top:63%;animation-delay:-4s}.ambient-stars i:nth-child(11){left:20%;top:53%;animation-delay:-8s;width:2px;height:2px}.ambient-stars i:nth-child(12){left:72%;top:52%;animation-delay:-1s;width:2px;height:2px}
+.btn,.promo-cta,.login-btn,.cart-btn,.chip,.icon-btn{position:relative;isolation:isolate;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease,color .22s ease}
+.btn:not(.outline):not(.white){background:linear-gradient(115deg,#a82ee6,#d238f5 52%,#8c39f2);border:1px solid #f0a8ff9c;box-shadow:inset 0 1px 0 #ffffff29,0 0 12px #c83eff55,0 0 26px #a82fe526,0 5px 18px #0003;text-shadow:0 1px 4px #53156866}
+.btn::before,.promo-cta::before,.login-btn::before{content:'';position:absolute;inset:-30% auto -30% -70%;width:40%;background:linear-gradient(90deg,transparent,#fff5,transparent);transform:skewX(-22deg);pointer-events:none;z-index:0;opacity:0}
+.btn.outline{border-color:#c56afa70;box-shadow:inset 0 0 12px #b733ed09,0 0 12px #af3ee915}
+.btn.white,.login-btn{border:1px solid #e8bcff;box-shadow:0 0 14px #e0a2ff3b}
+.promo-cta{border:1px solid #fff2b6;box-shadow:0 0 14px #f7c44764,0 0 28px #f7bd412b}
+.cart-btn{border-color:#db6eff88;box-shadow:0 0 14px #bf36f32b;overflow:visible}
+.chip.active{border-color:#dc73ffb3;box-shadow:inset 0 0 13px #c54aff19,0 0 14px #ba47ea26}
+.btn:focus-visible,.login-btn:focus-visible,.promo-cta:focus-visible,.cart-btn:focus-visible,.chip:focus-visible,.icon-btn:focus-visible{outline:2px solid #f0b6ff;outline-offset:4px;box-shadow:0 0 8px #e092ff88,0 0 27px #b74eff66}
+.btn:active:not(:disabled),.login-btn:active,.promo-cta:active,.cart-btn:active,.chip:active,.icon-btn:active{transform:translateY(1px) scale(.97)}
+.btn:disabled{box-shadow:none;text-shadow:none}
+.neon-ripple{position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#ffe7ffb3,transparent 72%);pointer-events:none;z-index:3}
+.product-card,.category-card{transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.product-card:focus-within{border-color:#d874ff99;box-shadow:0 0 18px #a43fef33}
+.header-inner{border-color:#d07bff29;box-shadow:0 8px 28px #0006,0 0 22px #b734ed12}
+.store-category-heading>span{filter:drop-shadow(0 0 6px #c437f7aa)}
+.store-group-heading>span{box-shadow:0 0 8px #bf3df65c}
+.discount-pill{box-shadow:0 0 9px #f0be3421}
+.is-entering{animation:neon-arrive .5s ease-out both}
+.motion-paused .ambient-scene *{animation-play-state:paused!important}
+@media(hover:hover) and (pointer:fine){
+ .btn:hover:not(:disabled){transform:translateY(-3px);border-color:#ffd5ff;box-shadow:inset 0 1px 0 #ffffff47,0 0 17px #da53ff9c,0 0 38px #b42bee5e,0 8px 24px #0004;filter:none}
+ .btn.white:hover,.login-btn:hover{box-shadow:0 0 18px #e9b1ff80,0 0 34px #bd4cfa33}
+ .btn.outline:hover{background:#c34cef12;color:#fff;border-color:#e3a0ff;box-shadow:0 0 17px #c655f24a}
+ .btn:hover:not(:disabled)::before,.promo-cta:hover::before,.promo-link:hover .promo-cta::before,.login-btn:hover::before{animation:button-shine .7s ease-out}
+ .promo-link:hover .promo-cta{box-shadow:0 0 18px #ffd97088,0 0 33px #edb52b40;transform:translateY(-1px)}
+ .cart-btn:hover,.icon-btn:hover{border-color:#efb4ff;box-shadow:0 0 17px #c853fc4d;background:#b144de16}
+ .product-card:hover{transform:translateY(-6px);border-color:#d176fc7d;box-shadow:0 0 0 1px #bd4beb1c,0 12px 29px #0004,0 0 24px #b539ed26}
+ .category-card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px #e38cff9c,0 0 23px #b43feb3b}
+ .chip:hover{border-color:#d584f2;color:#f0c8ff;box-shadow:0 0 14px #b745dc26;transform:translateY(-2px)}
+}
+@keyframes aurora-drift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(24vw,12vh,0) scale(1.14)}}
+@keyframes aurora-sweep{0%{transform:translate3d(0,0,0) scale(1.1)}100%{transform:translate3d(-24vw,18vh,0) scale(.95)}}
+@keyframes grid-flow{from{transform:perspective(750px) rotateX(48deg) translateY(0)}to{transform:perspective(750px) rotateX(48deg) translateY(72px)}}
+@keyframes spark-float{0%,100%{transform:translate3d(0,20px,0) rotate(0);opacity:.12}50%{transform:translate3d(12px,-50px,0) rotate(140deg);opacity:.7}}
+@keyframes button-shine{0%{left:-70%;opacity:0}15%{opacity:.8}100%{left:140%;opacity:0}}
+@keyframes neon-arrive{from{opacity:.35;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:767px){.ambient-aurora{width:115vw;height:70vh}.ambient-grid{opacity:.35;animation-duration:30s}.ambient-stars i:nth-child(n+7){display:none}.btn:not(.white):not(.outline){box-shadow:inset 0 1px 0 #ffffff29,0 0 10px #cb44f344,0 0 20px #a82fe51f}.is-entering{animation-duration:.35s}}
+@media(prefers-reduced-motion:reduce){.ambient-scene *{animation:none!important;will-change:auto!important}.ambient-grid{transform:perspective(750px) rotateX(48deg);opacity:.25}.ambient-stars i{opacity:.25}.btn,.promo-cta,.login-btn,.cart-btn,.chip,.icon-btn,.product-card,.category-card{transition:none!important}.btn::before,.promo-cta::before,.login-btn::before,.neon-ripple{display:none!important}.is-entering{animation:none!important}}
