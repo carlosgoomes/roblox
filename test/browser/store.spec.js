@@ -6,10 +6,10 @@ test.beforeEach(async({page})=>{
 });
 test('banner promocional à direita leva aos produtos com desconto no carrinho',async({page})=>{
  const {products}=await (await page.request.get('/api/catalog')).json();
- const offers=products.filter(p=>p.discountPercent===80);
+ const offers=products.filter(p=>p.discountPercent===75);
  expect(offers).toHaveLength(121);
  await page.goto('/');
- await expect(page.locator('.promo-action-copy strong')).toHaveText('80% OFF em todo o catálogo');
+ await expect(page.locator('.promo-action-copy strong')).toHaveText('75% OFF em todo o catálogo');
  const banner=page.locator('.promo-banner');await expect(banner).toBeVisible();
  await expect(banner.locator('img')).toHaveJSProperty('complete',true);
  expect(await banner.locator('img').evaluate(i=>i.naturalWidth)).toBeGreaterThan(1000);
@@ -17,8 +17,8 @@ test('banner promocional à direita leva aos produtos com desconto no carrinho',
  if(test.info().project.name==='desktop'){expect(promoBox.x).toBeGreaterThanOrEqual(heroBox.x+heroBox.width);expect(promoBox.y+promoBox.height).toBeLessThan(1000);}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.screenshot({path:`test-results/promotion-${test.info().project.name}.png`});
- await page.getByRole('link',{name:'Ver produtos com 80% OFF',exact:true}).click();
- await expect(page).toHaveURL(/\/catalog\?promo=80$/);
+ await page.getByRole('link',{name:'Ver produtos com 75% OFF',exact:true}).click();
+ await expect(page).toHaveURL(/\/catalog\?promo=75$/);
  await expect(page.locator('#results .product-card')).toHaveCount(offers.length);
  await expect(page.locator('#results .discount-pill')).toHaveCount(offers.length);
  await page.locator('#results .product-art').first().click();

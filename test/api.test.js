@@ -25,7 +25,7 @@ test('conta, sessão, validação de preço, pedidos e isolamento de usuários',
  assert.equal(registration.status,200);assert.ok(registration.cookie);cookie=registration.cookie;
  assert.equal((await request('me')).value.user.name,'Jogador Teste');
  assert.equal((await request('register',{name:'Outro',email:'player@example.test',password:'safe-test-password'})).status,409);
- const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);const sale=products.find(item=>item.discountPercent===80&&item.id!==p.id&&item.id!==last.id);assert.equal(products.length,121);assert.ok(sale);for(const item of products){assert.equal(item.discountPercent,80);assert.equal(Math.round(item.price*100),Math.round(item.oldPrice*100*.2));}
+ const {products}= (await request('catalog')).value;const p=products[0];const last=products.at(-1);const sale=products.find(item=>item.discountPercent===75&&item.id!==p.id&&item.id!==last.id);assert.equal(products.length,121);assert.ok(sale);for(const item of products){assert.equal(item.discountPercent,75);assert.equal(Math.round(item.price*100),Math.round(Math.round(item.oldPrice*100)*.25));}
  assert.equal((await request('orders',{items:[{id:p.id,quantity:1}],username:'Player',accepted:false})).status,400);
  for(const quantity of [-1,0,0.5,999,'1']) assert.equal((await request('orders',{items:[{id:p.id,quantity}],username:'Player',accepted:true})).status,400);
  assert.equal((await request('orders',{items:[null],username:'Player',accepted:true})).status,400);
