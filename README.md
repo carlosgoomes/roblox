@@ -69,7 +69,7 @@ Pixel 1127472739650574 instalado com o código-base oficial em public/meta-pixel
 
 ## Desempenho e imagens
 
-Os banners têm versões WebP de 480, 800, 1200 e 1600 pixels, com srcset, sizes e preload responsivo. As artes originais PNG são preservadas. As duas folhas de produtos também usam WebP.
+Os banners têm versões WebP de 480, 800, 1200 e 1600 pixels, com srcset, sizes e preload responsivo. As artes originais PNG são preservadas. As folhas originais dos produtos são divididas em miniaturas WebP individuais, com carregamento nativo sob demanda. Os cards são montados em pequenos lotes durante os períodos livres do navegador, preservando espaço e os 121 produtos no catálogo.
 
 Para regenerar as imagens, instale ImageMagick 7 e execute npm run assets:optimize. Esse comando só é necessário quando a arte original mudar; não faz parte do build da Vercel. As imagens otimizadas são versionadas no Git com hash no nome.
 

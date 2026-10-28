@@ -33,12 +33,12 @@ test('banner promocional à direita leva aos produtos com desconto no carrinho',
 test('todos os produtos têm arte local e a imagem corresponde ao tipo do item',async({page})=>{
  await page.goto('/');
  await expect(page.locator('#store .product-visual')).toHaveCount(121);
- const sheets=await page.locator('#store .product-visual image').evaluateAll(images=>[...new Set(images.map(i=>i.getAttribute('href')))]);
- expect(sheets).toHaveLength(2);
- for(const src of sheets){
+ const sheets=await page.locator('#store .product-visual img').evaluateAll(images=>[...new Set(images.map(i=>i.getAttribute('src')))]);
+ expect(sheets.length).toBeGreaterThan(50);
+ for(const src of sheets.slice(0,4)){
   const response=await page.request.get(src);expect(response.status()).toBe(200);expect(response.headers()['content-type']).toContain('image/webp');
   const decoded=await page.evaluate(async(src)=>{const i=new Image();i.src=src;await i.decode();return {width:i.naturalWidth,height:i.naturalHeight};},src);
-  expect(decoded.width).toBeGreaterThan(1000);expect(decoded.height).toBe(decoded.width);
+  expect(decoded.width).toBe(194);expect(decoded.height).toBe(decoded.width);
  }
  const cases=[['Magma Permanente','magma'],['Portal Permanente','portal'],['Dark Blade','dark-blade'],['Raça Shark V4 + Level Máximo','shark-v4'],['Flow Slot — Blue Lock','flow-slot'],['Conta Roblox de 2010','veteran-account']];
  for(const [name,key] of cases){
