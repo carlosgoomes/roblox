@@ -12,7 +12,7 @@ export const velaniCheckouts = {
   },
   "contas-aleatorias-raras": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-contas-aleatorias-raras",
-    "priceCents": 373,
+    "priceCents": 600,
     "active": true
   },
   "cdkttk-ou-darkblade-+-god-+-lvl-max-popular": {
@@ -27,7 +27,7 @@ export const velaniCheckouts = {
   },
   "1x-chromatic-box": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-1x-chromatic-box",
-    "priceCents": 323,
+    "priceCents": 600,
     "active": true
   },
   "ice-permanente-750-robux": {
@@ -47,22 +47,22 @@ export const velaniCheckouts = {
   },
   "blue-lock-style-slot": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot",
-    "priceCents": 248,
+    "priceCents": 600,
     "active": true
   },
   "blue-lock-flow-slot": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-lock-flow-slot",
-    "priceCents": 248,
+    "priceCents": 600,
     "active": true
   },
   "blue-lock-spins": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-lock-spins",
-    "priceCents": 498,
+    "priceCents": 600,
     "active": true
   },
   "blue-lock-dinheiro": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-lock-dinheiro",
-    "priceCents": 198,
+    "priceCents": 600,
     "active": true
   },
   "raca-v4": {
@@ -72,7 +72,7 @@ export const velaniCheckouts = {
   },
   "caixa-rara": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-caixa-rara",
-    "priceCents": 223,
+    "priceCents": 600,
     "active": true
   },
   "magnetic-fruit": {
@@ -82,12 +82,12 @@ export const velaniCheckouts = {
   },
   "especial-mes-das-criancas": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-especial-mes-das-criancas",
-    "priceCents": 323,
+    "priceCents": 600,
     "active": true
   },
   "promocao-level-max": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-promocao-level-max",
-    "priceCents": 173,
+    "priceCents": 600,
     "active": true
   },
   "conta-especial": {
@@ -102,57 +102,57 @@ export const velaniCheckouts = {
   },
   "fruit-rocket": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-rocket",
-    "priceCents": 248,
+    "priceCents": 600,
     "active": true
   },
   "fruit-spin": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-spin",
-    "priceCents": 273,
+    "priceCents": 600,
     "active": true
   },
   "fruit-chop": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-chop",
-    "priceCents": 298,
+    "priceCents": 600,
     "active": true
   },
   "fruit-spring": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-spring",
-    "priceCents": 323,
+    "priceCents": 600,
     "active": true
   },
   "fruit-bomb": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-bomb",
-    "priceCents": 348,
+    "priceCents": 600,
     "active": true
   },
   "fruit-smoke": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-smoke",
-    "priceCents": 373,
+    "priceCents": 600,
     "active": true
   },
   "fruit-spike": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-spike",
-    "priceCents": 398,
+    "priceCents": 600,
     "active": true
   },
   "fruit-flame": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-flame",
-    "priceCents": 423,
+    "priceCents": 600,
     "active": true
   },
   "fruit-falcon": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-falcon",
-    "priceCents": 448,
+    "priceCents": 600,
     "active": true
   },
   "fruit-sand": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-sand",
-    "priceCents": 473,
+    "priceCents": 600,
     "active": true
   },
   "fruit-dark": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-fruit-dark",
-    "priceCents": 498,
+    "priceCents": 600,
     "active": true
   },
   "fruit-diamond": {
@@ -292,12 +292,12 @@ export const velaniCheckouts = {
   },
   "permanent-rocket": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-permanent-rocket",
-    "priceCents": 373,
+    "priceCents": 600,
     "active": true
   },
   "permanent-spin": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-permanent-spin",
-    "priceCents": 498,
+    "priceCents": 600,
     "active": true
   },
   "permanent-chop": {
@@ -412,7 +412,7 @@ export const velaniCheckouts = {
   },
   "pass-0": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-pass-0",
-    "priceCents": 498,
+    "priceCents": 600,
     "active": true
   },
   "pass-1": {
@@ -452,27 +452,27 @@ export const velaniCheckouts = {
   },
   "blue-0": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-0",
-    "priceCents": 198,
+    "priceCents": 600,
     "active": true
   },
   "blue-1": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-1",
-    "priceCents": 273,
+    "priceCents": 600,
     "active": true
   },
   "blue-2": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-2",
-    "priceCents": 348,
+    "priceCents": 600,
     "active": true
   },
   "blue-3": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-3",
-    "priceCents": 423,
+    "priceCents": 600,
     "active": true
   },
   "blue-4": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-blue-4",
-    "priceCents": 498,
+    "priceCents": 600,
     "active": true
   },
   "blue-5": {
@@ -552,12 +552,12 @@ export const velaniCheckouts = {
   },
   "jujutsu-0": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-jujutsu-0",
-    "priceCents": 248,
+    "priceCents": 600,
     "active": true
   },
   "jujutsu-1": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-jujutsu-1",
-    "priceCents": 448,
+    "priceCents": 600,
     "active": true
   },
   "jujutsu-2": {
@@ -582,12 +582,12 @@ export const velaniCheckouts = {
   },
   "special-0": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-special-0",
-    "priceCents": 223,
+    "priceCents": 600,
     "active": true
   },
   "special-1": {
     "url": "https://pagamentosegurocheckout.space/pay/realbux-special-1",
-    "priceCents": 448,
+    "priceCents": 600,
     "active": true
   },
   "special-2": {

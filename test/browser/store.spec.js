@@ -7,9 +7,9 @@ test.beforeEach(async({page})=>{
 test('banner promocional à direita leva aos produtos com desconto no carrinho',async({page})=>{
  const {products}=await (await page.request.get('/api/catalog')).json();
  const offers=products.filter(p=>p.discountPercent===75);
- expect(offers).toHaveLength(121);
+ expect(offers).toHaveLength(89);
  await page.goto('/');
- await expect(page.locator('.promo-action-copy strong')).toHaveText('75% OFF em todo o catálogo');
+ await expect(page.locator('.promo-action-copy strong')).toHaveText('75% OFF em produtos selecionados');
  const banner=page.locator('.promo-banner');await expect(banner).toBeVisible();
  await expect(banner.locator('img')).toHaveJSProperty('complete',true);
  expect(await banner.locator('img').evaluate(i=>i.naturalWidth)).toBeGreaterThan(1000);
@@ -88,7 +88,7 @@ test('produtos e quantidades têm pagamentos unitários separados com o valor co
  const first=page.locator('[data-checkout-product="ice-permanente-750-robux"] a');
  const second=page.locator('[data-checkout-product="blue-lock-style-slot"] a');
  await expect(first).toContainText('R$ 11,23');
- await expect(second).toContainText('R$ 2,48');
+ await expect(second).toContainText('R$ 6,00');
  await expect(second).toHaveAttribute('href','https://pagamentosegurocheckout.space/pay/realbux-blue-lock-style-slot');
  await context.route('https://pagamentosegurocheckout.space/**',route=>route.fulfill({contentType:'text/html',body:'<h1>Checkout externo interceptado pelo teste</h1>'}));
  const popupPromise=page.waitForEvent('popup');await second.click();const popup=await popupPromise;

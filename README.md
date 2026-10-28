@@ -1,6 +1,6 @@
 # REALBUX
 
-Loja de produtos digitais para o universo Roblox, com catálogo de 121 produtos confirmado pelo usuário, promoção de 75% OFF, interface responsiva, artes locais, botões neon, fundo animado, contas e carrinho persistente.
+Loja de produtos digitais para o universo Roblox, com catálogo de 121 produtos confirmado pelo usuário, descontos de até 75% OFF, interface responsiva, artes locais, botões neon, fundo animado, contas e carrinho persistente.
 
 Os 121 produtos têm checkouts cadastrados na Velani com os preços promocionais do catálogo. Há 120 ativos e um inativo por falta de estoque. O pagamento é externo, por unidade, e o vendedor entrega manualmente no e-mail informado na compra. Veja [OPERACAO.md](OPERACAO.md).
 
@@ -22,7 +22,7 @@ Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS
 
 - Início, categorias, catálogo, busca, filtros, ordenação, páginas de produto, FAQ, termos e privacidade.
 - Descrição de entrega manual pelo vendedor no e-mail informado na compra, após confirmação do pagamento.
-- 75% OFF nos 121 produtos, calculados a partir do preço original, com arredondamento em centavos.
+- Promoção de 75% OFF com arredondamento em centavos; por solicitação do vendedor, os 32 itens que ficavam abaixo de R$ 5,00 custam R$ 6,00. Seus selos mostram o desconto efetivo.
 - Carrinho persistente com adição, quantidades e remoção.
 - Cadastro, login, logout, atualização de nome e senha, cookie HttpOnly e senhas protegidas com scrypt.
 - Histórico com isolamento por usuário e exclusão de registros de teste na resposta pública.

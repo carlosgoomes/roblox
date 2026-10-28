@@ -1,6 +1,6 @@
 # Operação comercial da REALBUX
 
-O vendedor confirmou os 121 produtos, as quantidades e os preços com 75% OFF. Os 121 checkouts foram cadastrados na conta Velani e seus valores foram conferidos com o catálogo, em centavos. Há 120 ativos; Conta Especial + Itens Exclusivos permanece inativo porque seu estoque no site é zero.
+O vendedor confirmou os 121 produtos, as quantidades e os preços promocionais. Os 121 checkouts foram cadastrados na conta Velani e seus valores foram conferidos com o catálogo, em centavos. Há 120 ativos; Conta Especial + Itens Exclusivos permanece inativo porque seu estoque no site é zero.
 
 ## Pagamento
 
@@ -8,7 +8,7 @@ public/velani-checkouts.js associa cada ID de produto ao link criado na Velani, 
 
 Cada link cobra uma unidade de um produto. O checkout do site explica que várias unidades ou produtos exigem pagamentos separados e mostra o valor unitário junto de cada botão. O total do carrinho não é enviado a um link individual. Os links abrem em uma nova aba; o carrinho permanece salvo e a navegação não é tratada como confirmação de pagamento.
 
-Pix está habilitado. Cartão e boleto não foram ativados. A API pública da Velani informa mínimo de R$ 5,00 para transações via gateway; 32 produtos custam menos. O cadastro desses preços foi aceito, mas não foi criada cobrança real para confirmar se o limite também se aplica aos checkouts. Essa regra precisa ser confirmada com a Velani antes de anunciar vendas desses itens. Nenhum preço foi aumentado.
+Pix está habilitado. Cartão e boleto não foram ativados. Por solicitação do vendedor, os 32 produtos que custavam menos de R$ 5,00 passaram a R$ 6,00 no site e na Velani. Os demais preços foram preservados. Não há produtos abaixo de R$ 5,00. Os selos desses 32 produtos exibem o desconto efetivo e o banner anuncia 75% OFF em produtos selecionados.
 
 ## Entrega manual
 
@@ -26,4 +26,4 @@ POST /api/orders permanece indisponível para criar compras locais sem confirma�
 
 O token temporário da Velani é usado apenas para administração neste ambiente. Nenhuma credencial foi incluída no frontend, no Git ou no arquivo de links. Os testes de navegador interceptam o checkout externo e não geram cobranças.
 
-O mínimo de cobrança e um pagamento real de ponta a ponta ainda precisam de validação operacional com a Velani. Sincronização automática de histórico, reserva de estoque e entrega automática de produtos não fazem parte deste fluxo de links individuais.
+Um pagamento real de ponta a ponta ainda precisa de validação operacional com a Velani. Sincronização automática de histórico, reserva de estoque e entrega automática de produtos não fazem parte deste fluxo de links individuais.
