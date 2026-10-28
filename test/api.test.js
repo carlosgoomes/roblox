@@ -64,3 +64,21 @@ test('rotas internas e recursos locais incluem somente o pixel solicitado',async
  assert.equal((await fetch(base+'/assets/fruits.svg')).status,200);
  assert.equal((await fetch(base+'/missing.js')).status,404);
 });
+test('banners leves e arquivos versionados usam cache sem armazenar sessão ou preços antigos',async()=>{
+ const {optimizedAssets}=await import('../public/optimized-assets.js');
+ for(const banner of Object.values(optimizedAssets.banners)){
+  const response=await fetch(base+banner.src);
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type'),/image\/webp/);
+  assert.match(response.headers.get('cache-control'),/max-age=31536000, immutable/);
+  assert.ok((await response.arrayBuffer()).byteLength<100000);
+  assert.equal(banner.variants.length,4);
+ }
+ const html=await (await fetch(base+'/')).text();
+ const bundle=html.match(/src="(\/dist\/app-[^"]+\.js)"/)[1];
+ const response=await fetch(base+bundle);
+ assert.equal(response.status,200);
+ assert.match(response.headers.get('cache-control'),/immutable/);
+ assert.equal((await fetch(base+'/api/catalog')).headers.get('cache-control'),'no-store');
+ assert.equal((await fetch(base+'/api/me')).headers.get('cache-control'),'no-store');
+});

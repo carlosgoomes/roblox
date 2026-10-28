@@ -14,7 +14,7 @@ npm ci
 npm run dev
 ```
 
-O servidor usa a porta 3000. `npm start` executa sem watch; `npm run build` verifica a sintaxe. O banco local é criado em `data/store.sqlite` quando uma operação de conta precisa dele. Preserve esse diretório.
+O servidor usa a porta 3000. `npm start` executa sem watch; `npm run build` verifica a sintaxe e gera os pacotes compactados do frontend. O banco local é criado em `data/store.sqlite` quando uma operação de conta precisa dele. Preserve esse diretório.
 
 Variáveis opcionais: `PORT`, `HOST`, `DB_PATH` e `COOKIE_SECURE=true` sob HTTPS. Na Vercel, a persistência exige `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`; veja [CADASTRO.md](CADASTRO.md) para criar o banco e liberar contas, e [DEPLOY.md](DEPLOY.md) para a implantação. Não coloque credenciais em arquivos versionados.
 
@@ -66,3 +66,13 @@ A origem do layout e o histórico de preparação estão em [REFERENCE.md](REFER
 ## Pixel da Meta
 
 Pixel 1127472739650574 instalado com o código-base oficial em public/meta-pixel-base.js e fallback noscript no HTML. public/meta-pixel.js acompanha PageView nas rotas internas, ViewContent, AddToCart, InitiateCheckout e Purchase após confirmação do pagamento na Velani. Inicialização, PageView inicial e compras confirmadas têm prevenção de duplicidade. Não há Conversions API nem correspondência automática de formulários.
+
+## Desempenho e imagens
+
+Os banners têm versões WebP de 480, 800, 1200 e 1600 pixels, com srcset, sizes e preload responsivo. As artes originais PNG são preservadas. As duas folhas de produtos também usam WebP.
+
+Para regenerar as imagens, instale ImageMagick 7 e execute npm run assets:optimize. Esse comando só é necessário quando a arte original mudar; não faz parte do build da Vercel. As imagens otimizadas são versionadas no Git com hash no nome.
+
+npm run build usa esbuild para gerar JavaScript e CSS compactados em public/dist e atualizar as referências no HTML. O diretório dist não é versionado; o build local e a Vercel o recriam. npm start, npm run dev e npm run test:e2e executam o build antes de iniciar. Após alterar o frontend durante o desenvolvimento, execute novamente npm run build e recarregue a página.
+
+Arquivos com hash usam cache imutável. HTML e arquivos de configuração continuam revalidando; as APIs de catálogo e conta permanecem com no-store. O conteúdo público renderiza antes da consulta de sessão, sem refazer o banner quando a sessão chega. O pixel continua ativo e seu SDK tem prioridade baixa, atrás das imagens principais.

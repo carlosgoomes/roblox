@@ -1,9 +1,7 @@
+import {optimizedAssets} from './optimized-assets.js';
 // Original promotional illustrations generated for this project, not official game screenshots.
 // Each sprite uses a cell in a local 6 × 6 atlas; the SVG viewport selects the cell without distortion.
-export const artworkSheets = {
-  fruits: '/assets/products/fruits-atlas.png',
-  equipment: '/assets/products/equipment-atlas.png'
-};
+export const artworkSheets = optimizedAssets.products;
 const fruits = ['rocket','spin','chop','spring','bomb','smoke','spike','flame','falcon','sand','dark','diamond','light','rubber','barrier','ghost','magma','quake','buddha','love','spider','phoenix','portal','rumble','dough','dragon','kitsune','leopard','ice','magnetic','venom','spirit','control','shadow','t-rex','mammoth'];
 const equipment = ['cdk','ttk','dark-blade','shark-anchor','dragon-trident','spikey-trident','hallow-scythe','pole-v2','soul-guitar','godhuman','human-v4','shark-v4','angel-v4','rabbit-v4','ghoul-v4','cyborg-v4','veteran-account','premium-account','mastery','money-boost','fast-boats','lucky-drops','fruit-notifier','fruit-storage','boss-drops','vip','style-slot','flow-slot','style-spins','flow-spins','blue-lock-money','chromatic-box','chromatic-box-pack','jujutsu-early-access','jujutsu-emotes','mystery-account'];
 export function artworkTile(key) {

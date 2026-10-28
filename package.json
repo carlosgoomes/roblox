@@ -7,16 +7,18 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
+    "dev": "npm run build && node --watch src/server.js",
+    "start": "npm run build && node src/server.js",
     "test": "node --test test/*.test.js",
-    "test:e2e": "playwright test",
-    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js && node --check src/payments.js && node --check public/checkout-view.js && node --check public/meta-pixel.js && node --check public/meta-pixel-base.js",
+    "test:e2e": "npm run build && playwright test",
+    "build": "node --check public/app.js && node --check src/server.js && node --check api/index.js && node --check public/effects.js && node --check src/payments.js && node --check public/checkout-view.js && node --check public/meta-pixel.js && node --check public/meta-pixel-base.js && node --check public/optimized-assets.js && node scripts/build.mjs",
     "assets:sync": "node --use-env-proxy scripts/sync-reference-assets.js",
-    "db:check": "node --use-env-proxy scripts/check-account-database.js"
+    "db:check": "node --use-env-proxy scripts/check-account-database.js",
+    "assets:optimize": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2"
+    "@playwright/test": "1.58.2",
+    "esbuild": "0.28.2"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

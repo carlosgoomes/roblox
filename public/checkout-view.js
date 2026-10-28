@@ -1,12 +1,14 @@
 import {deliveryDescription} from './store-policy.js';
 
-export function checkoutView({user,items,total,payment,escape,money,icon,breadcrumbs,productImage}){
+export function checkoutView({user,authLoading=false,items,total,payment,escape,money,icon,breadcrumbs,productImage}){
   if(!items.length&&!payment)return `<div class="container page">${breadcrumbs('Checkout')}<div class="empty-state">${icon('cart')}<h1>Seu carrinho está vazio</h1><p>Escolha um produto para continuar.</p><a class="btn" href="/catalog">Explorar catálogo</a></div></div>`;
   const orderItems=payment?.items||items;
   const orderTotal=payment?.total??total;
   const summary=`<aside class="panel order-summary"><div class="section-top"><h2>${payment?'Resumo do pedido':'Resumo do carrinho'}</h2>${payment?'':'<button class="text-button" data-action="cart">Editar</button>'}</div>${orderItems.map(p=>`<div class="cart-item" data-checkout-product="${escape(p.id)}">${productImage(p)}<div class="cart-item-copy"><strong>${escape(p.name)}</strong><p class="small subtle">${p.quantity} × ${money(p.price)}</p></div><b>${money(p.price*p.quantity)}</b></div>`).join('')}<div class="summary-lines"><div class="total-row"><strong>Total em um pagamento</strong><strong id="checkout-total">${money(orderTotal)}</strong></div></div></aside>`;
   let content;
-  if(!user){
+  if(authLoading){
+    content='<h2>Preparando seu checkout</h2><p role="status">Carregando sua conta…</p>';
+  }else if(!user){
     content=`<h2>Entre para finalizar sua compra</h2><p>Pague todos os produtos em um único Pix. Sua conta guarda o pedido e o e-mail para a entrega.</p><a class="btn full" href="/login?next=checkout">Entrar para pagar</a><p>Ainda não tem conta? <a class="text-button" href="/register?next=checkout">Criar conta</a></p>`;
   }else if(!payment){
     content=`<h2>Um único pagamento com a Velani</h2><p>Todos os produtos e quantidades do carrinho serão incluídos no mesmo Pix.</p><p>${deliveryDescription}</p><p class="small">E-mail para entrega: <strong>${escape(user.email)}</strong></p><form id="checkout-form"><label class="checkbox"><input type="checkbox" name="accepted" required><span>Conferi os produtos, os valores e aceito os <a href="/terms">termos de uso</a>.</span></label><p class="form-error" role="alert"></p><button class="btn full" type="submit">Gerar Pix de ${money(orderTotal)} ${icon('arrow')}</button></form><p class="small subtle">Gerar o Pix não debita sua conta. Confira o destinatário e o valor no aplicativo do seu banco antes de pagar.</p>`;

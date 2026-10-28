@@ -16,12 +16,12 @@ test('banner promocional à direita leva aos produtos com desconto no carrinho',
  await expect(page.locator('.promo-action-copy strong')).toHaveText('75% OFF em produtos selecionados');
  const banner=page.locator('.promo-banner');await expect(banner).toBeVisible();
  await expect(banner.locator('img')).toHaveJSProperty('complete',true);
- expect(await banner.locator('img').evaluate(i=>i.naturalWidth)).toBeGreaterThan(1000);
+ expect(await banner.locator('img').evaluate(i=>i.naturalWidth>=i.clientWidth)).toBeTruthy();
  const promoBox=await banner.boundingBox();const heroBox=await page.locator('.reference-hero').boundingBox();
  if(test.info().project.name==='desktop'){expect(promoBox.x).toBeGreaterThanOrEqual(heroBox.x+heroBox.width);expect(promoBox.y+promoBox.height).toBeLessThan(1000);}
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.screenshot({path:`test-results/promotion-${test.info().project.name}.png`});
- await page.getByRole('link',{name:'Ver produtos com 75% OFF',exact:true}).click();
+ await page.getByRole('link',{name:/75% OFF em produtos selecionados.*APROVEITAR OFERTAS/}).click();
  await expect(page).toHaveURL(/\/catalog\?promo=75$/);
  await expect(page.locator('#results .product-card')).toHaveCount(offers.length);
  await expect(page.locator('#results .discount-pill')).toHaveCount(offers.length);
@@ -36,7 +36,7 @@ test('todos os produtos têm arte local e a imagem corresponde ao tipo do item',
  const sheets=await page.locator('#store .product-visual image').evaluateAll(images=>[...new Set(images.map(i=>i.getAttribute('href')))]);
  expect(sheets).toHaveLength(2);
  for(const src of sheets){
-  const response=await page.request.get(src);expect(response.status()).toBe(200);expect(response.headers()['content-type']).toContain('image/png');
+  const response=await page.request.get(src);expect(response.status()).toBe(200);expect(response.headers()['content-type']).toContain('image/webp');
   const decoded=await page.evaluate(async(src)=>{const i=new Image();i.src=src;await i.decode();return {width:i.naturalWidth,height:i.naturalHeight};},src);
   expect(decoded.width).toBeGreaterThan(1000);expect(decoded.height).toBe(decoded.width);
  }
@@ -61,7 +61,7 @@ test('busca, filtros, abas, carrinho persistente e navegação',async({page})=>{
  await expect(page.locator('.category-grid>a')).toHaveCount(4);
  expect(await page.locator('.reference-products').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(test.info().project.name==='desktop'?5:2);
  await expect(page.locator('.reference-hero img')).toHaveJSProperty('complete',true);
- expect(await page.locator('.reference-hero img').evaluate(img=>img.naturalWidth)).toBeGreaterThan(1000);
+ expect(await page.locator('.reference-hero img').evaluate(img=>img.naturalWidth>=img.clientWidth)).toBeTruthy();
  await page.screenshot({path:`test-results/viewport-${test.info().project.name}.png`});
  await page.screenshot({path:`test-results/home-${test.info().project.name}.png`,fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
@@ -164,4 +164,25 @@ test('pixel Meta inicializa uma vez e acompanha navegação, produto, carrinho e
  await page.getByRole('button',{name:'Abrir carrinho',exact:true}).click();
  await page.getByRole('button',{name:'Fechar carrinho',exact:true}).click();
  expect(await page.evaluate(()=>window.__metaCalls.filter(c=>(c[0]==='track'&&c[1]==='PageView')||(c[0]==='trackSingle'&&c[2]==='PageView')).length)).toBe(4);
+});
+test('banners responsivos aparecem enquanto a consulta da conta ainda está pendente',async({page})=>{
+ let release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/api/me',async route=>{
+  await gate;
+  await route.fulfill({json:{user:{id:'performance-test-user',name:'Cliente Teste',email:'performance@example.test'}}});
+ });
+ try{
+  await page.goto('/',{waitUntil:'commit'});
+  await expect(page.locator('.reference-hero img')).toBeVisible();
+  await expect(page.locator('.promo-banner img')).toBeVisible();
+  await expect(page.locator('#store .product-card')).toHaveCount(121);
+  const hero=await page.locator('.reference-hero').elementHandle();
+  expect(await page.locator('.reference-hero img').getAttribute('srcset')).toContain('480w');
+  expect(await page.locator('.promo-banner img').getAttribute('fetchpriority')).toBe('high');
+  const response=page.waitForResponse('**/api/me');release();await response;
+  await expect(page.locator('.header').getByRole('link',{name:'Minha conta',exact:false})).toBeVisible();
+  expect(await hero.evaluate(node=>node.isConnected)).toBeTruthy();
+  expect(await page.locator('.reference-hero img').evaluate(img=>img.currentSrc.endsWith('.webp'))).toBeTruthy();
+ }finally{release();}
 });

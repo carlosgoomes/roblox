@@ -98,7 +98,7 @@ export async function handler(req,res) {
     let file=resolve(root,'.'+decodeURIComponent(path));
     if(!file.startsWith(root+sep) && file!==root) fail('Acesso negado.',403);
     try {if(!statSync(file).isFile()) file=resolve(root,'index.html');} catch {if(extname(path)) fail('Arquivo não encontrado.',404); file=resolve(root,'index.html');}
-    const content=readFileSync(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:content);
+    const content=readFileSync(file);const cache=(file.startsWith(resolve(root,'assets/optimized')+sep)||file.startsWith(resolve(root,'dist')+sep))?'public, max-age=31536000, immutable':file.startsWith(resolve(root,'assets')+sep)?'public, max-age=86400, stale-while-revalidate=604800':'no-cache';res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':cache});res.end(req.method==='HEAD'?undefined:content);
   } catch(e) {
     if(e.code==='ACCOUNT_DATABASE_NOT_CONFIGURED')console.error('[ACCOUNT_DATABASE_NOT_CONFIGURED]',JSON.stringify({reason:e.reason,variables:e.variableNames,environment:process.env.VERCEL_ENV||'local'}));
     else if(!e.status)console.error(e);
