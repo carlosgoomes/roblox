@@ -57,9 +57,9 @@ test('conta, sessão, catálogo com links Velani e isolamento dos pedidos',async
  const second=await request('register',{name:'Outro Jogador',email:'other@example.test',password:'safe-test-password'});cookie=second.cookie;
  assert.equal((await request('orders')).value.orders.length,0);
 });
-test('rotas internas e recursos locais são servidos sem rastreadores',async()=>{
+test('rotas internas e recursos locais incluem somente o pixel solicitado',async()=>{
  for(const path of ['/','/faq','/terms','/privacidade','/login','/checkout','/category/bloxfruits','/package/example','/account/orders']){
-  const r=await fetch(base+path);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);const text=await r.text();assert.match(text,/id="app"/);assert.doesNotMatch(text,/googletagmanager|facebook\.com|tiktok|clarity\.ms/);
+  const r=await fetch(base+path);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);const text=await r.text();assert.match(text,/id="app"/);assert.match(text,/1127472739650574/);assert.match(r.headers.get('content-security-policy'),/https:\/\/connect\.facebook\.net/);assert.doesNotMatch(text,/googletagmanager|tiktok|clarity\.ms/);
  }
  assert.equal((await fetch(base+'/assets/fruits.svg')).status,200);
  assert.equal((await fetch(base+'/missing.js')).status,404);

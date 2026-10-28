@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 test.beforeEach(async({page})=>{
+ // Keep test traffic out of the merchant's real Meta pixel.
+ await page.route('https://connect.facebook.net/**',route=>route.fulfill({contentType:'application/javascript',body:"window.__metaCalls=(window.fbq.queue||[]).map(args=>Array.from(args));window.fbq.queue=[];window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));};"}));
+ await page.route('https://www.facebook.com/**',route=>route.abort());
+ await page.route('https://facebook.com/**',route=>route.abort());
  // Exercise deterministic local image fallbacks; external originals remain network-dependent.
  await page.route('https://bloxrealm.com.br/**',route=>route.abort());
  await page.route('https://gnr-assets.centralcart.ai/**',route=>route.abort());
@@ -108,10 +112,17 @@ test('vários produtos e quantidades são pagos em um Pix, persistem e só limpa
  expect(created).toBe(1);
  await page.getByRole('button',{name:'Verificar pagamento',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Pagamento confirmado',exact:true})).toHaveCount(0);
+ expect(await page.evaluate(()=>window.__metaCalls.filter(c=>c[0]==='trackSingle'&&c[2]==='Purchase').length)).toBe(0);
  paid=true;
  await page.getByRole('button',{name:'Verificar pagamento',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Pagamento confirmado',exact:true})).toBeVisible();
  await expect(page.locator('[data-cart-count]')).toHaveText('0');
+ const purchases=await page.evaluate(()=>window.__metaCalls.filter(c=>c[0]==='trackSingle'&&c[2]==='Purchase'));
+ expect(purchases).toHaveLength(1);expect(purchases[0][1]).toBe('1127472739650574');
+ expect(purchases[0][3].value).toBe(28.46);expect(purchases[0][3].currency).toBe('BRL');
+ expect(purchases[0][4].eventID).toBe('realbux_purchase_browser-payment-order');
+ await page.reload();await expect(page.getByRole('heading',{name:'Pagamento confirmado',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>window.__metaCalls.filter(c=>c[0]==='trackSingle'&&c[2]==='Purchase').length)).toBe(0);
  await page.goto('/package/'+style.id);await page.getByRole('button',{name:'Comprar agora',exact:false}).click();
  await expect(page.getByRole('button',{name:'Gerar Pix de R$ 6,00',exact:false})).toBeVisible();
  await page.reload();await expect(page.locator('[data-cart-count]')).toHaveText('1');
@@ -128,4 +139,29 @@ test('cadastro, checkout único Velani e login',async({page})=>{
  await page.getByRole('button',{name:'Sair da conta'}).click();await expect(page).toHaveURL(/login/);
  await page.getByLabel('E-mail',{exact:true}).fill(email);await page.getByLabel('Senha',{exact:true}).fill('wrong-password');await page.getByRole('button',{name:'Entrar',exact:false}).click();await expect(page.getByRole('alert')).toContainText('incorretos');
  await page.getByLabel('Senha',{exact:true}).fill('browser-safe-password');await page.getByRole('button',{name:'Entrar',exact:false}).click();await expect(page).toHaveURL(/\/account$/);await page.getByRole('link',{name:'Meus pedidos',exact:true}).first().click();await expect(page.locator('.order-card')).toHaveCount(0);
+});
+test('pixel Meta inicializa uma vez e acompanha navegação, produto, carrinho e checkout sem duplicar',async({page})=>{
+ await page.goto('/');
+ await page.getByRole('button',{name:'Abrir menu',exact:true}).click();
+ await page.getByRole('dialog').getByRole('link',{name:'Todos os produtos',exact:false}).click();
+ await page.locator('#results .product-art').first().click();
+ await page.getByRole('button',{name:'Adicionar ao carrinho',exact:true}).click();
+ await page.getByRole('dialog').getByRole('link',{name:'Ir para a compra',exact:false}).click();
+ await expect(page.getByRole('heading',{name:'Entre para finalizar sua compra',exact:true})).toBeVisible();
+ const calls=await page.evaluate(()=>window.__metaCalls);
+ expect(calls.filter(c=>c[0]==='init')).toEqual([['init','1127472739650574']]);
+ const pageViews=calls.filter(c=>(c[0]==='track'&&c[1]==='PageView')||(c[0]==='trackSingle'&&c[2]==='PageView'));
+ expect(pageViews).toHaveLength(4);
+ const events=calls.filter(c=>c[0]==='trackSingle');
+ expect(events.filter(c=>c[2]==='ViewContent')).toHaveLength(1);
+ const added=events.filter(c=>c[2]==='AddToCart');expect(added).toHaveLength(1);
+ expect(added[0][3].value).toBe(6.23);expect(added[0][3].currency).toBe('BRL');
+ const checkout=events.filter(c=>c[2]==='InitiateCheckout');expect(checkout).toHaveLength(1);
+ expect(checkout[0][3].value).toBe(6.23);
+ expect(events.some(c=>c[2]==='Purchase')).toBeFalsy();
+ expect(calls.every(c=>!JSON.stringify(c).includes('@example.'))).toBeTruthy();
+ await expect(page.locator('script[src="https://connect.facebook.net/en_US/fbevents.js"]')).toHaveCount(1);
+ await page.getByRole('button',{name:'Abrir carrinho',exact:true}).click();
+ await page.getByRole('button',{name:'Fechar carrinho',exact:true}).click();
+ expect(await page.evaluate(()=>window.__metaCalls.filter(c=>(c[0]==='track'&&c[1]==='PageView')||(c[0]==='trackSingle'&&c[2]==='PageView')).length)).toBe(4);
 });

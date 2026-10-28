@@ -10,3 +10,5 @@
 .pix-qrcode{display:block;max-width:100%;height:auto;background:white;border-radius:12px;margin:20px auto}.pix-code{display:block;width:100%;resize:vertical;word-break:break-all;background:var(--surface);color:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0 16px;font:inherit;font-size:12px}.unified-checkout .checkbox{margin-block:22px}.unified-checkout .btn{white-space:normal;text-align:center}.payment-confirmed>.icon{font-size:48px;color:#72efa6}.unified-checkout .status{display:inline-block}.unified-checkout .btn+.text-button{display:block;margin-top:20px}
 
 .order-summary>.cart-item>.product-visual{width:68px;height:68px;min-width:68px}.order-summary .cart-item-copy{min-width:0;overflow-wrap:anywhere}.order-summary>.cart-item{align-items:center}.unified-checkout{min-width:0}.order-summary .total-row{gap:12px}
+
+.meta-pixel-fallback{display:none}

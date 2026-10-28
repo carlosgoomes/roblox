@@ -62,3 +62,7 @@ Chromium em `/usr/bin/chromium` é detectado automaticamente; outro executável 
 Use o checkout existente: cada tarefa em nuvem já é isolada. Não crie worktrees sem solicitação. Inicie com `npm start` e confira `/api/catalog`, `/api/me` e os fluxos necessários. Processos precisam ser reiniciados após restaurar o ambiente.
 
 A origem do layout e o histórico de preparação estão em [REFERENCE.md](REFERENCE.md). A confirmação do catálogo não substitui a integração real de pagamento e entrega.
+
+## Pixel da Meta
+
+Pixel 1127472739650574 instalado com o código-base oficial em public/meta-pixel-base.js e fallback noscript no HTML. public/meta-pixel.js acompanha PageView nas rotas internas, ViewContent, AddToCart, InitiateCheckout e Purchase após confirmação do pagamento na Velani. Inicialização, PageView inicial e compras confirmadas têm prevenção de duplicidade. Não há Conversions API nem correspondência automática de formulários.

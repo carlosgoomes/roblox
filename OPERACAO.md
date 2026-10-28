@@ -31,3 +31,9 @@ Não há webhook, reserva global de estoque ou entrega automática. O vendedor d
 Configure VELANI_SECRET_KEY como segredo na hospedagem. Não coloque chaves no frontend ou no Git. Testes automatizados simulam a Velani e verificam preços, quantidades, tentativas concorrentes, resposta perdida, confirmação, isolamento entre usuários e manutenção do carrinho.
 
 Uma cobrança real de verificação pode ser gerada sem pagamento para conferir a integração publicada. Uma cobrança pendente não significa dinheiro recebido.
+
+## Medição de anúncios
+
+O vendedor solicitou o Pixel da Meta 1127472739650574. O código-base oficial é carregado localmente e busca o SDK em connect.facebook.net. A política de segurança autoriza esse script e os endpoints Facebook necessários, sem liberar scripts inline.
+
+Eventos: PageView, ViewContent, AddToCart, InitiateCheckout e Purchase. A criação de Pix pendente não dispara Purchase. Somente um pedido confirmado pela API Velani pode gerar esse evento. A compra usa eventID estável pelo ID do pedido e um registro local para evitar repetições ao recarregar a página. Não são incluídos nome, e-mail, senha ou dados bancários nos parâmetros definidos pela loja. A política de privacidade descreve o uso do pixel. Os testes interceptam a Meta para não enviar eventos fictícios.
